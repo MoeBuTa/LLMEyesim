@@ -4,10 +4,10 @@ from pathlib import Path
 import shutil
 from typing import Any, Dict, List
 
-from LLMEyeSim.eyesim.image_process import ImageProcess
 from loguru import logger
 import pandas as pd
 
+from LLMEyeSim.eyesim.image_process import ImageProcess
 from LLMEyeSim.utils.constants import DATA_DIR
 
 

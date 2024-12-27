@@ -1,9 +1,10 @@
 import argparse
 
-from LLMEyeSim.utils.constants import DATA_DIR
-from LLMEyeSim.simulation.simulator import Simulator
-
 from loguru import logger
+
+from LLMEyeSim.simulation.simulator import Simulator
+from LLMEyeSim.utils.constants import DATA_DIR
+
 
 def get_numbered_task_name(task: str) -> str:
     """Generate numbered task folder name."""

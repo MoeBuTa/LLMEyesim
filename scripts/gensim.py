@@ -1,10 +1,11 @@
+from loguru import logger
+
 from LLMEyeSim.eyesim.environ_generator.dynamic_environ import DynamicEnviron
 from LLMEyeSim.eyesim.environ_generator.free_environ import FreeEnviron
 from LLMEyeSim.eyesim.environ_generator.static_dynamic_environ import (
     StaticDynamicEnviron,
 )
 from LLMEyeSim.eyesim.environ_generator.static_environ import StaticEnviron
-from loguru import logger
 
 if __name__ == '__main__':
     free_environ = FreeEnviron()

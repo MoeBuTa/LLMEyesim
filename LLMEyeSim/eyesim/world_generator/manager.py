@@ -3,7 +3,7 @@ from LLMEyeSim.eyesim.world_generator.dynamic import DynamicWorld
 from LLMEyeSim.eyesim.world_generator.free import FreeWorld
 from LLMEyeSim.eyesim.world_generator.mixed import MixedWorld
 from LLMEyeSim.eyesim.world_generator.static import StaticWorld
-from LLMEyeSim.eyesim.world_generator.test import TestWorld
+from LLMEyeSim.eyesim.world_generator.demo import DemoWorld
 
 
 class WorldManager:
@@ -13,7 +13,7 @@ class WorldManager:
             "free": FreeWorld,
             "static": StaticWorld,
             "mixed": MixedWorld,
-            "test": TestWorld
+            "demo": DemoWorld
         }
         self.world = self._init_world(world_name)
 

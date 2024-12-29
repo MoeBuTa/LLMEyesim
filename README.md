@@ -7,6 +7,7 @@
 ## Installation
 
 - Download [eyesim](https://roblab.org/eyesim/)
+- create `config.yml` and set the content according to the `config.example.yml`
 - set up conda environment
 ```bash
 conda env create -f environment.yml
@@ -15,5 +16,12 @@ pip install -e .
 ```
 - Execute the demo
 ```bash
-llmeyesim test gpt-4o none False 0.5
+llmeyesim demo gpt-4o none False 0.5
 ```
+
+- Parameters 
+  - `world`: `demo`, `free`, `static`, `dynamic`, `mixed`
+  - `model`: `gpt-4o`, `gpt-4o-mini`
+  - `attack`: `none`, `omi`, `ghi`
+  - `defense`: `false`, `true`
+  - `attack rate`: `0.1`, `0.3`, `0.5`, `0.7`, `1`

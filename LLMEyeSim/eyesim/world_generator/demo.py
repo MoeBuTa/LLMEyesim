@@ -5,14 +5,14 @@ from loguru import logger
 from LLMEyeSim.eyesim.world_generator.base import WorldGenerator
 
 
-class TestWorld(WorldGenerator):
+class DemoWorld(WorldGenerator):
     def __init__(self, world_name: str):
-        logger.info(f"Initializing TestWorld with world name: {world_name}")
+        logger.info(f"Initializing DemoWorld with world name: {world_name}")
         super().__init__(world_name=world_name)
-        logger.debug("TestWorld initialization complete")
+        logger.debug("DemoWorld initialization complete")
 
     def generate_sim(self):
-        logger.info("Generating simulation files for TestWorld")
+        logger.info("Generating simulation files for DemoWorld")
 
         # Generate world file
         logger.debug("Creating world file content")
@@ -66,4 +66,4 @@ Soccer 1600 700 0
             logger.error(f"Failed to write simulation file: {str(e)}")
             raise
 
-        logger.info("TestWorld simulation generation complete")
+        logger.info("DemoWorld simulation generation complete")

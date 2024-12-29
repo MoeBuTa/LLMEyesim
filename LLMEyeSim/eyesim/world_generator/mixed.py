@@ -1,14 +1,18 @@
-from LLMEyeSim.eyesim.environ_generator import *
+import random
+
+from LLMEyeSim.eyesim.world_generator.base import WorldGenerator
 
 
-class StaticDynamicEnviron(EnvironGenerator):
-    def __init__(self):
-        super().__init__(env_name="static-dynamic-environ")
+class MixedWorld(WorldGenerator):
+    def __init__(self, world_name: str):
+        super().__init__(world_name=world_name)
 
-    def generate_random_sim(self):
+    def generate_sim(self):
         indices = random.sample(range(len(self.static_obstacles)), 3)
         content = f"""
-# world "{self.world_file}"
+# world
+world world.wld
+
 settings VIS TRACE
 
 # Robots
@@ -24,5 +28,5 @@ settings VIS TRACE
 {self.static_obstacles[indices[1]]}
 {self.static_obstacles[indices[2]]}
         """
-        with open(self.file_path, "w") as f:
+        with open(self.sim_file, "w") as f:
             f.write(content)

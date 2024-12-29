@@ -38,8 +38,8 @@ SYSTEM_PROMPT = f"""
         """
 
 
-def action_system_prompt(enable_security: bool = False):
-    if enable_security:
+def action_system_prompt(enable_defence: bool = False):
+    if enable_defence:
         return SYSTEM_PROMPT + SECURITY_PROMPT
     return SYSTEM_PROMPT
 

@@ -1,6 +1,8 @@
-from LLMEyeSim.utils.constants import EYESIM_DIR
-from loguru import logger
 import os
+
+from loguru import logger
+
+from LLMEyeSim.utils.constants import EYESIM_DIR
 
 
 class WorldGenerator:

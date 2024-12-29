@@ -1,6 +1,9 @@
 import os
-from LLMEyeSim.eyesim.world_generator.base import WorldGenerator
+
 from loguru import logger
+
+from LLMEyeSim.eyesim.world_generator.base import WorldGenerator
+
 
 class TestWorld(WorldGenerator):
     def __init__(self, world_name: str):

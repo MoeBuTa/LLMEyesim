@@ -65,8 +65,8 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         'world',
         type=str,
-        default="test",
-        choices=['free', 'static', 'dynamic', 'mixed', 'test'],
+        default="demo",
+        choices=['free', 'static', 'dynamic', 'mixed', 'demo'],
         help='Select the world environment type'
     )
 
@@ -84,7 +84,7 @@ def create_parser() -> argparse.ArgumentParser:
         "attack",
         type=str,
         default="none",
-        choices=['none', 'naive', 'image', 'noise'],
+        choices=['none', 'ghi', 'omi'],
         help='Select the type of attack to use'
     )
 
@@ -107,7 +107,8 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def launch_eyesim():
+def launch_eyesim() -> int:
+    """Launch the eyesim simulator."""
     try:
         # Run the eyesim command
         process = subprocess.Popen("eyesim", shell=True)
@@ -126,7 +127,7 @@ def launch_eyesim():
 
 def setup_simulation(args: Dict[str, Any]) -> Simulator:
     """Initialize and configure the simulation."""
-    world = args.get("world", "test")
+    world = args.get("world", "demo")
     attack = args.get("attack", "none")
     model = args.get("model", "gpt-4o-mini")
     defence = args.get("defence", False)

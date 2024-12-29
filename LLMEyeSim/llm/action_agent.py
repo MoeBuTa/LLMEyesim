@@ -13,8 +13,8 @@ class ActionAgent:
         self.task_name = task_name
         self.agent_name = agent_name
 
-    def process_action(self, images: List, human_instruction: str=None, last_command=None, enable_security: bool=False) -> Dict:
-        system_prompt = action_system_prompt(enable_security)
+    def process_action(self, images: List, human_instruction: str=None, last_command=None, enable_defence: bool=False) -> Dict:
+        system_prompt = action_system_prompt(enable_defence)
         user_prompt = action_user_prompt(images, human_instruction, last_command)
         messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}]
         return self.agent.process(messages=messages)

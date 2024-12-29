@@ -26,6 +26,7 @@ EXP_DIR = PROJECT_DIR / "experiment"
 DATA_DIR = PROJECT_DIR / "experiment" / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+EYESIM_DIR = "/opt/eyesim/eyesimX/"
 # Load configuration
 config = load_config(PROJECT_DIR / "config.yml")
 

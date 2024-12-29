@@ -20,7 +20,7 @@ class SimulatorConfig:
     agent_type: str = "cloud"
     attack: str = ""
     attack_rate: float = 0.5
-    enable_security: bool = False
+    enable_defence: bool = False
     max_steps: int = 20
     red_detection_threshold: int = 100
     failure_retry_threshold: int = 3
@@ -250,7 +250,7 @@ class Simulator:
             human_instruction=human_instruction,
             last_command=current_state['last_command'],
             images=images,
-            enable_security=self.config.enable_security
+            enable_defence=self.config.enable_defence
         )
 
     def _record_response(self, content: Dict, usage: Dict, attack_flag: bool, start_time: float) -> None:

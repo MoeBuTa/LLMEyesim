@@ -7,9 +7,6 @@ from eye import *
 from loguru import logger
 import numpy as np
 
-from LLMEyeSim.eyesim.image_process import ImageProcess
-from LLMEyeSim.eyesim.task_manager import TaskManager
-
 
 @dataclass(frozen=True)
 class Position:
@@ -105,7 +102,7 @@ class Action:
         """Optimized safety calculation with increased cache size"""
         return distance >= abs(self.distance) + required_clearance
 
-    def is_safe(self, scan: 'c_int_Array_360', range_degrees: int = 30) -> bool:
+    def is_safe(self, scan: List[int], range_degrees: int = 30) -> bool:
         """
         Enhanced safety check for C integer array input
         """
@@ -127,15 +124,13 @@ class RobotActuator:
     Optimized robot actuator class with enhanced error handling and performance
     """
 
-    def __init__(self, task_name: str):
+    def __init__(self):
         # Initialize instance attributes
         self.position: Position = Position()
         self.img = None
         self.scan = None
         self.step: int = 0
         self.last_command: List[Action] = [Action("stop")]
-        self.task_manager: TaskManager = TaskManager(task_name)
-        self.image_process: ImageProcess = ImageProcess()
         self._executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=2)
 
         # Initialize hardware and state
@@ -164,7 +159,7 @@ class RobotActuator:
             factor = 1 if direction == "forward" else -1
             VWStraight(factor * distance, speed)
             VWWait()
-            self.update_state()
+            self.update_position()
         except Exception as e:
             logger.error(f"Movement error: {e}")
             raise
@@ -175,20 +170,12 @@ class RobotActuator:
             factor = 1 if direction == "left" else -1
             VWTurn(factor * angle, speed)
             VWWait()
-            self.update_state()
+            self.update_position()
         except Exception as e:
             logger.error(f"Turn error: {e}")
             raise
 
-    @property
-    def state_paths(self) -> Dict[str, str]:
-        """Get current state image paths"""
-        return {
-            "img": f"{self.task_manager.img_path}/{self.step}.png",
-            "lidar": f"{self.task_manager.img_path}/{self.step}_lidar.png"
-        }
-
-    def update_state(self) -> None:
+    def update_position(self) -> None:
         """Update robot position state by creating new Position instance"""
         try:
             x, y, phi = VWGetPosition()
@@ -197,33 +184,7 @@ class RobotActuator:
             logger.error(f"State update failed: {e}")
             raise
 
-    def to_dict(self) -> Dict:
-        """Convert robot state to dictionary"""
-        paths = self.state_paths
-        return {
-            "step": self.step,
-            **self.position.to_dict(),
-            "img_path": paths["img"],
-            "lidar_path": paths["lidar"]
-        }
-
-    def get_current_state(self, camera: bool = True, lidar: bool = True) -> Dict:
-        """Get current state with optimized image processing"""
-        imgs = []
-        if any([camera, lidar]):
-            paths = self.state_paths
-            if lidar:
-                imgs.append(self.image_process.encode_image(paths["lidar"]))
-            if camera:
-                imgs.append(self.image_process.encode_image(paths["img"]))
-
-        return {
-            "position": self.position.to_dict(),
-            "last_command": self._format_last_command(),
-            "images": imgs
-        }
-
-    def _format_last_command(self) -> Optional[List[str]]:
+    def format_last_command(self) -> Optional[List[str]]:
         """Format last command for output"""
         if not self.last_command:
             return None

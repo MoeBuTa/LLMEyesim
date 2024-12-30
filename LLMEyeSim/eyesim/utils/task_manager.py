@@ -2,12 +2,11 @@ import csv
 from dataclasses import dataclass
 from pathlib import Path
 import shutil
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from loguru import logger
 import pandas as pd
 
-from LLMEyeSim.eyesim.image_process import ImageProcess
 from LLMEyeSim.utils.constants import DATA_DIR
 
 
@@ -30,9 +29,11 @@ class TaskManager:
         self.state_path = self.paths.state_path
         self.llm_reasoning_record_path = self.paths.llm_reasoning_record_path
         self.llm_action_record_path = self.paths.llm_action_record_path
-        self.image_process = ImageProcess()
 
-    def _init_directory(self, task_name: str) -> TaskPaths:
+
+
+    @staticmethod
+    def _init_directory(task_name: str) -> TaskPaths:
         """Initialize directory structure for the task."""
         task_name = task_name
         task_path = DATA_DIR / task_name
@@ -50,16 +51,16 @@ class TaskManager:
             llm_action_record_path=task_path / "llm_action_record.csv"
         )
 
-    def data_collection(self, current_state: Dict[str, Any], img: Any, scan: List[int]) -> None:
+    def data_collection(self, current_state: Dict[str, Any]) -> None:
         """Collect and save robot operation data."""
         logger.info("Data collection started!")
         try:
-            self.image_process.cam2image(img).save(current_state["img_path"])
-            self.image_process.lidar2image(scan=list(scan), save_path=current_state["lidar_path"])
             self.save_item_to_csv(item=current_state, file_path=str(self.state_path))
         except Exception as e:
             logger.error(f"Error during data collection: {e}")
             raise
+
+
 
     @staticmethod
     def save_item_to_csv(item: Dict[str, Any], file_path: str) -> None:
@@ -101,3 +102,12 @@ class TaskManager:
         except Exception as e:
             logger.error(f"Error loading CSV data: {e}")
             raise
+
+    def robot_state_path(self, step: int) -> Dict[str, str]:
+        paths = {
+            "img": f"{self.img_path}/{step}.png",
+            "lidar": f"{self.img_path}/{step}_lidar.png"
+        }
+        return paths
+
+

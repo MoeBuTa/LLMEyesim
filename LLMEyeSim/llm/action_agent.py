@@ -18,30 +18,3 @@ class ActionAgent:
         user_prompt = action_user_prompt(images, human_instruction, last_command)
         messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}]
         return self.agent.process(messages=messages)
-
-    def llm_response_record(
-        self,
-        step: int,
-        perception: str,
-        planning: str,
-        control: List[Dict],
-        attack_injected: bool,
-        completion_tokens: int,
-        prompt_tokens: int,
-        total_tokens: int,
-        response_time: float
-
-    ):
-        return {
-            "step": step,
-            "task_name": self.task_name,
-            "model_name": self.agent_name,
-            "perception": perception,
-            "planning": planning,
-            "control": control,
-            "attack_injected": attack_injected,
-            "completion_tokens": completion_tokens,
-            "prompt_tokens": prompt_tokens,
-            "total_tokens": total_tokens,
-            "response_time": response_time
-        }

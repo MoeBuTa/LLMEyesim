@@ -1,4 +1,4 @@
-from LLMEyeSim.cli import main
+from LLMEyesim.cli import main
 
 if __name__ == "__main__":
     main()

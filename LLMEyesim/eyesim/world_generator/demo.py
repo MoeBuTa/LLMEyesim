@@ -2,7 +2,7 @@ import os
 
 from loguru import logger
 
-from LLMEyeSim.eyesim.world_generator.base import WorldGenerator
+from LLMEyesim.eyesim.world_generator.base import WorldGenerator
 
 
 class DemoWorld(WorldGenerator):

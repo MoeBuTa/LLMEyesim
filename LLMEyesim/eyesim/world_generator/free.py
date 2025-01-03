@@ -1,14 +1,13 @@
 import random
 
-from LLMEyeSim.eyesim.world_generator.base import WorldGenerator
+from LLMEyesim.eyesim.world_generator.base import WorldGenerator
 
 
-class DynamicWorld(WorldGenerator):
+class FreeWorld(WorldGenerator):
     def __init__(self, world_name: str):
         super().__init__(world_name=world_name)
 
     def generate_sim(self):
-        indices = random.sample(range(len(self.dynamic_obstacles)), 2)
         content = f"""
 # world
 world world.wld
@@ -16,11 +15,7 @@ world world.wld
 settings VIS TRACE
 
 # Robots
-{self.dynamic_obstacles[indices[0]]} swarm.py
-
-{self.dynamic_obstacles[indices[1]]} swarm.py
-
-{random.choices(self.llm_robot)[0]} s4.py
+{random.choices(self.llm_robot)[0]}
 
 # Objects
 {random.choices(self.target)[0]}

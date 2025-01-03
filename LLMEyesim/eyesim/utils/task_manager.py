@@ -7,7 +7,7 @@ from typing import Any, Dict
 from loguru import logger
 import pandas as pd
 
-from LLMEyeSim.utils.constants import DATA_DIR
+from LLMEyesim.utils.constants import DATA_DIR
 
 
 @dataclass

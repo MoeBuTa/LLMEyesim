@@ -7,11 +7,11 @@ from typing import Dict, List, Tuple
 from eye import KEY4, KEYRead
 from loguru import logger
 
-from LLMEyeSim.eyesim.utils.image_process import ImageProcess
-from LLMEyeSim.eyesim.robot_actuator import Action, RobotActuator
-from LLMEyeSim.eyesim.utils.task_manager import TaskManager
-from LLMEyeSim.llm.action_agent import ActionAgent
-from LLMEyeSim.utils.constants import DATA_DIR
+from LLMEyesim.eyesim.utils.image_process import ImageProcess
+from LLMEyesim.eyesim.robot_actuator import Action, RobotActuator
+from LLMEyesim.eyesim.utils.task_manager import TaskManager
+from LLMEyesim.llm.action_agent import ActionAgent
+from LLMEyesim.utils.constants import DATA_DIR
 
 
 @dataclass(frozen=True)

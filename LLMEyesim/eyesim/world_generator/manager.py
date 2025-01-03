@@ -1,9 +1,9 @@
-from LLMEyeSim.eyesim.world_generator.base import WorldGenerator
-from LLMEyeSim.eyesim.world_generator.demo import DemoWorld
-from LLMEyeSim.eyesim.world_generator.dynamic import DynamicWorld
-from LLMEyeSim.eyesim.world_generator.free import FreeWorld
-from LLMEyeSim.eyesim.world_generator.mixed import MixedWorld
-from LLMEyeSim.eyesim.world_generator.static import StaticWorld
+from LLMEyesim.eyesim.world_generator.base import WorldGenerator
+from LLMEyesim.eyesim.world_generator.demo import DemoWorld
+from LLMEyesim.eyesim.world_generator.dynamic import DynamicWorld
+from LLMEyesim.eyesim.world_generator.free import FreeWorld
+from LLMEyesim.eyesim.world_generator.mixed import MixedWorld
+from LLMEyesim.eyesim.world_generator.static import StaticWorld
 
 
 class WorldManager:

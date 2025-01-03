@@ -1,7 +1,7 @@
 from typing import Dict, List
 
-from LLMEyeSim.llm.agents.manager import AgentManager
-from LLMEyeSim.llm.prompt.action_generation import (
+from LLMEyesim.llm.agents.manager import AgentManager
+from LLMEyesim.llm.prompt.action_generation import (
     action_system_prompt,
     action_user_prompt,
 )

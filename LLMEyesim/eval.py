@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score, precision_score, recall_score
 
-from LLMEyeSim.utils.constants import DATA_DIR
+from LLMEyesim.utils.constants import DATA_DIR
 
 
 @dataclass

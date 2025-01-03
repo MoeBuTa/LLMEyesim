@@ -6,9 +6,9 @@ from typing import Any, Dict, List, Union
 
 from loguru import logger
 
-from LLMEyeSim.eyesim.world_generator.manager import WorldManager
-from LLMEyeSim.simulation.simulator import Simulator
-from LLMEyeSim.utils.constants import DATA_DIR
+from LLMEyesim.eyesim.world_generator.manager import WorldManager
+from LLMEyesim.simulation.simulator import Simulator
+from LLMEyesim.utils.constants import DATA_DIR
 
 
 def str2bool(value: Union[str, bool]) -> bool:

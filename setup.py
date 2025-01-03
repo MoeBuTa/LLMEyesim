@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'llmeyesim=LLMEyeSim.cli:main',  # This makes the 'llmeyesim' command available
+            'llmeyesim=LLMEyesim.cli:main',  # This makes the 'llmeyesim' command available
         ],
     },
     python_requires='>=3.10',  # Adjust based on your needs

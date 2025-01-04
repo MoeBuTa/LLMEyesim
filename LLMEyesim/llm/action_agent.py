@@ -1,10 +1,7 @@
 from typing import Dict, List
 
 from LLMEyesim.llm.agents.manager import AgentManager
-from LLMEyesim.llm.prompt.action_generation import (
-    action_system_prompt,
-    action_user_prompt,
-)
+from LLMEyesim.llm.prompt.action_generation_prompt_old import ActionGenerationPromptOld
 
 
 class ActionAgent:
@@ -14,7 +11,8 @@ class ActionAgent:
         self.agent_name = agent_name
 
     def process_action(self, images: List, human_instruction: str=None, last_command=None, enable_defence: bool=False) -> Dict:
-        system_prompt = action_system_prompt(enable_defence)
-        user_prompt = action_user_prompt(images, human_instruction, last_command)
+        action_generation_prompt_old = ActionGenerationPromptOld(enable_defence)
+        system_prompt = action_generation_prompt_old.format_system_prompt()
+        user_prompt = action_generation_prompt_old.format_user_prompt(images, human_instruction, last_command)
         messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}]
         return self.agent.process(messages=messages)

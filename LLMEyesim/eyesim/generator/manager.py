@@ -1,9 +1,9 @@
-from LLMEyesim.eyesim.world_generator.base import WorldGenerator
-from LLMEyesim.eyesim.world_generator.demo import DemoWorld
-from LLMEyesim.eyesim.world_generator.dynamic import DynamicWorld
-from LLMEyesim.eyesim.world_generator.free import FreeWorld
-from LLMEyesim.eyesim.world_generator.mixed import MixedWorld
-from LLMEyesim.eyesim.world_generator.static import StaticWorld
+from LLMEyesim.eyesim.generator.base import WorldGenerator
+from LLMEyesim.eyesim.generator.demo import DemoWorld
+from LLMEyesim.eyesim.generator.dynamic import DynamicWorld
+from LLMEyesim.eyesim.generator.free import FreeWorld
+from LLMEyesim.eyesim.generator.mixed import MixedWorld
+from LLMEyesim.eyesim.generator.static import StaticWorld
 
 
 class WorldManager:
@@ -25,5 +25,5 @@ class WorldManager:
             )
         return self.world_type[world_name](world_name)
 
-    def generate_sim(self):
-        return self.world.generate_sim()
+    def init_sim(self):
+        return self.world.init_sim()

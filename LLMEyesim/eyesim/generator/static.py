@@ -1,17 +1,17 @@
 import random
 
-from LLMEyesim.eyesim.world_generator.base import WorldGenerator
+from LLMEyesim.eyesim.generator.base import WorldGenerator
 
 
 class StaticWorld(WorldGenerator):
     def __init__(self, world_name: str):
         super().__init__(world_name=world_name)
 
-    def generate_sim(self):
+    def init_sim(self):
         indices = random.sample(range(len(self.static_obstacles)), 4)
         content = f"""
 # world
-world world.wld
+world {self.world_file}
 
 settings VIS TRACE
 # Robots

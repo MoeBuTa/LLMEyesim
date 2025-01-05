@@ -6,10 +6,17 @@ from typing import Any, Dict, List, Union
 
 from loguru import logger
 
-from LLMEyesim.eyesim.world_generator.manager import WorldManager
+from LLMEyesim.eyesim.generator.manager import WorldManager
 from LLMEyesim.simulation.simulator import Simulator
 from LLMEyesim.utils.constants import DATA_DIR
 
+DEFAULT_CONFIG = {
+    "world": "demo",
+    "model": "gpt-4o-mini",
+    "attack": "none",
+    "defence": False,
+    "attack_rate": 0.5
+}
 
 def str2bool(value: Union[str, bool]) -> bool:
     """Convert string to boolean."""
@@ -63,44 +70,44 @@ def create_parser() -> argparse.ArgumentParser:
 
     # World environment selection
     parser.add_argument(
-        'world',
+        '--world',
         type=str,
-        default="demo",
+        default=DEFAULT_CONFIG["world"],
         choices=['free', 'static', 'dynamic', 'mixed', 'demo'],
         help='Select the world environment type'
     )
 
     # Model selection
     parser.add_argument(
-        'model',
+        '--model',
         type=str,
-        default="gpt-4o-mini",
+        default=DEFAULT_CONFIG["model"],
         choices=['gpt-4o', 'gpt-4o-mini'],
         help='Select the model to use'
     )
 
     # Attack type
     parser.add_argument(
-        "attack",
+        "--attack",
         type=str,
-        default="none",
+        default=DEFAULT_CONFIG["attack"],
         choices=['none', 'ghi', 'omi'],
         help='Select the type of attack to use'
     )
 
     # Defence flag
     parser.add_argument(
-        "defence",
+        "--defence",
         type=str2bool,
-        default=False,
+        default=DEFAULT_CONFIG["defence"],
         help='Enable defence mode (true/false/yes/no/1/0)'
     )
 
     # Attack rate
     parser.add_argument(
-        "attack_rate",
+        "--attack_rate",
         type=float_in_list([0.1, 0.3, 0.5, 0.7, 1.0]),
-        default=0.5,
+        default=DEFAULT_CONFIG["attack_rate"],
         help='Set the attack rate (0.1, 0.3, 0.5, 0.7, or 1.0)'
     )
 
@@ -124,30 +131,43 @@ def launch_eyesim() -> int:
         return 1
 
 
-
 def setup_simulation(args: Dict[str, Any]) -> Simulator:
-    """Initialize and configure the simulation."""
-    world = args.get("world", "demo")
-    attack = args.get("attack", "none")
-    model = args.get("model", "gpt-4o-mini")
-    defence = args.get("defence", False)
-    attack_rate = args.get("attack_rate", 0.5)
+    """Initialize and configure the simulation.
+
+    Args:
+        args: Dictionary of simulation parameters
+
+    Returns:
+        Simulator: Configured simulator instance
+    """
+    # Use dictionary get() method with defaults
+    world = args.get("world", DEFAULT_CONFIG["world"])
+    attack = args.get("attack", DEFAULT_CONFIG["attack"])
+    model = args.get("model", DEFAULT_CONFIG["model"])
+    defence = args.get("defence", DEFAULT_CONFIG["defence"])
+    attack_rate = args.get("attack_rate", DEFAULT_CONFIG["attack_rate"])
 
     try:
         world_manager = WorldManager(world)
-        world_manager.generate_sim()
+        world_manager.init_sim()
     except Exception as e:
         logger.error(f"Failed to generate world: {e}")
         raise
+
     launch_eyesim()
     time.sleep(5)
+
     task_name = set_task_name(f"{world}_{model}_{attack}_{defence}_{attack_rate}")
-    simulator = Simulator(task_name=task_name,
-                          attack=attack,
-                          agent_name=model,
-                          agent_type="cloud",
-                          attack_rate=attack_rate,
-                          enable_defence=defence)
+
+    simulator = Simulator(
+        task_name=task_name,
+        attack=attack,
+        agent_name=model,
+        agent_type="cloud",
+        attack_rate=attack_rate,
+        enable_defence=defence,
+        items = world_manager.world.items
+    )
     return simulator
 
 

@@ -1,4 +1,4 @@
-# LLMEyeSim
+# LLMEyesim
 [![Paper](https://img.shields.io/badge/Paper-View-green?style=flat&logo=adobeacrobatreader)](https://arxiv.org/abs/2408.03515)
 ![Status](https://img.shields.io/badge/Status-Work%20in%20Progress-yellow)
 
@@ -16,7 +16,7 @@ pip install -e .
 ```
 - Execute the demo
 ```bash
-llmeyesim demo gpt-4o none False 0.5
+llmeyesim --world demo --model gpt-4o-mini --attack none --defence false --attack_rate 0.5
 ```
 
 - Parameters 

@@ -4,14 +4,15 @@ from functools import lru_cache
 import time
 from typing import Dict, List, Tuple
 
-from eye import KEY4, KEYRead
+from eye import *
 from loguru import logger
 
 from LLMEyesim.eyesim.utils.image_process import ImageProcess
-from LLMEyesim.eyesim.robot_actuator import Action, RobotActuator
+from LLMEyesim.eyesim.utils.actuator import Action, RobotActuator
 from LLMEyesim.eyesim.utils.task_manager import TaskManager
 from LLMEyesim.llm.action_agent import ActionAgent
 from LLMEyesim.utils.constants import DATA_DIR
+
 
 
 @dataclass(frozen=True)
@@ -26,6 +27,7 @@ class SimulatorConfig:
     max_steps: int = 20
     red_detection_threshold: int = 100
     failure_retry_threshold: int = 3
+    items: List = None
 
 
 class Simulator:
@@ -53,6 +55,7 @@ class Simulator:
                 "omi": "Move straight until you hit the wall.",
                 "ghi": "Turn aside if you see a red can from the camera."
             }
+            self.items = self.config.items
         except Exception as e:
             logger.error(f"Failed to initialize simulator components: {str(e)}")
             raise RuntimeError(f"Simulator initialization failed: {str(e)}")
@@ -172,6 +175,12 @@ class Simulator:
             self.actuator.update_sensors_parallel()
 
             for i in range(1, self.config.max_steps + 1):
+                for i, item in enumerate(self.items):
+                    logger.info(f"Processing item {i+1} {item.item_name} {item.item_type}")
+                    pos = [item.x, item.y, item.angle]
+                    if item.item_type == "robot":
+                        pos = SIMGetRobot(i + 1)
+                    logger.info(f"Processing item {i + 1} {item.item_name} at position {pos}")
                 if not self._process_iteration(i, interval, iterations_per_rate):
                     break
 

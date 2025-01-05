@@ -16,7 +16,7 @@ pip install -e .
 ```
 - Execute the demo
 ```bash
-llmeyesim demo gpt-4o none False 0.5
+llmeyesim --world demo --model gpt-4o-mini --attack none --defence false --attack_rate 0.5
 ```
 
 - Parameters 

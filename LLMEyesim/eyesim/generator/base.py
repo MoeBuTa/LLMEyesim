@@ -1,8 +1,11 @@
-import os
 from dataclasses import dataclass
-from loguru import logger
+import os
 from pathlib import Path
+
+from loguru import logger
+
 from LLMEyesim.utils.constants import EYESIM_DIR, SCRIPT_DIR, WORLD_DIR
+
 
 @dataclass(frozen=True)
 class WorldItem:

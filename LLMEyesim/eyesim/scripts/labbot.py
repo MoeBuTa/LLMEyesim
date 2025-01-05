@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-from eye import *
 from random import *
+
+from eye import *
 
 SAFE = 200
 PSD_FRONT = 1

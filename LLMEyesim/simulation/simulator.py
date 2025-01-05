@@ -7,12 +7,11 @@ from typing import Dict, List, Tuple
 from eye import *
 from loguru import logger
 
-from LLMEyesim.eyesim.utils.image_process import ImageProcess
 from LLMEyesim.eyesim.utils.actuator import Action, RobotActuator
+from LLMEyesim.eyesim.utils.image_process import ImageProcess
 from LLMEyesim.eyesim.utils.task_manager import TaskManager
 from LLMEyesim.llm.action_agent import ActionAgent
 from LLMEyesim.utils.constants import DATA_DIR
-
 
 
 @dataclass(frozen=True)

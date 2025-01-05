@@ -3,7 +3,6 @@ from loguru import logger
 from LLMEyesim.eyesim.generator.base import WorldGenerator
 
 
-
 class DemoWorld(WorldGenerator):
     def __init__(self, world_name: str):
         super().__init__(world_name=world_name)

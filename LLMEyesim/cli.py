@@ -162,8 +162,8 @@ def setup_simulation(args: Dict[str, Any]) -> Simulator:
     simulator = Simulator(
         task_name=task_name,
         attack=attack,
-        agent_name=model,
-        agent_type="cloud",
+        llm_name=model,
+        llm_type="cloud",
         attack_rate=attack_rate,
         enable_defence=defence,
         items = world_manager.world.items

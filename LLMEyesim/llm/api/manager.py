@@ -1,43 +1,43 @@
 from typing import Any, Dict
 
-from LLMEyesim.llm.api.base import BaseAgent
-from LLMEyesim.llm.api.cloud_agent import CloudAgent
-from LLMEyesim.llm.api.exceptions import InvalidAgentType
-from LLMEyesim.llm.api.ollama_agent import OllamaAgent
+from LLMEyesim.llm.api.base import BaseLLM
+from LLMEyesim.llm.api.cloud_llm import CloudLLM
+from LLMEyesim.llm.api.exceptions import InvalidLLMType
+from LLMEyesim.llm.api.ollama_llm import OllamaLLM
 
 
-class AgentManager:
-    def __init__(self, agent_name: str, agent_type: str, **kwargs):
+class LLMManager:
+    def __init__(self, llm_name: str, llm_type: str, **kwargs):
         """
-        Initialize AgentManager with a specific agent.
+        Initialize LLMManager with a specific llm.
 
         Args:
-            agent_name: Name for the agent (e.g., 'gpt-4', 'gpt-4-turbo')
-            agent_type: Type of agent ('cloud', 'quantization', or 'hf')
+            llm_name: Name for the llm (e.g., 'gpt-4', 'gpt-4-turbo')
+            llm_type: Type of llm ('cloud', 'quantization', or 'hf')
         """
-        self.agent_types = {
-            "cloud": CloudAgent,
-            "ollama": OllamaAgent,
+        self.llm_types = {
+            "cloud": CloudLLM,
+            "ollama": OllamaLLM,
         }
 
-        self.agent = self._init_agent(agent_name, agent_type, **kwargs)
+        self.llm = self._init_llm(llm_name, llm_type, **kwargs)
 
-    def _init_agent(self, agent_name: str, agent_type: str, **kwargs) -> BaseAgent:
-        agent_type = agent_type.lower()
-        if agent_type not in self.agent_types:
-            raise InvalidAgentType(
-                f"Invalid agent type. Must be one of: {', '.join(self.agent_types.keys())}"
+    def _init_llm(self, llm_name: str, llm_type: str, **kwargs) -> BaseLLM:
+        llm_type = llm_type.lower()
+        if llm_type not in self.llm_types:
+            raise InvalidLLMType(
+                f"Invalid llm type. Must be one of: {', '.join(self.llm_types.keys())}"
             )
 
-        agent_class = self.agent_types[agent_type]
-        return agent_class(agent_name, agent_type, **kwargs)
+        llm_class = self.llm_types[llm_type]
+        return llm_class(llm_name, llm_type, **kwargs)
 
     def process(self,**kwargs) -> Any:
-        return self.agent.process(**kwargs)
+        return self.llm.process(**kwargs)
 
-    def get_agent_info(self) -> Dict[str, str]:
+    def get_llm_info(self) -> Dict[str, str]:
         return {
-            "name": self.agent.name,
-            "type": type(self.agent).__name__,
-            "config": getattr(self.agent, "model", None),
+            "name": self.llm.name,
+            "type": type(self.llm).__name__,
+            "config": getattr(self.llm, "model", None),
         }

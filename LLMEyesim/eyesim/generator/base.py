@@ -1,19 +1,10 @@
-from dataclasses import dataclass
 import os
 from pathlib import Path
 
 from loguru import logger
 
+from LLMEyesim.eyesim.generator.models import WorldItem
 from LLMEyesim.utils.constants import EYESIM_DIR, SCRIPT_DIR, WORLD_DIR
-
-
-@dataclass(frozen=True)
-class WorldItem:
-    item_name: str
-    item_type: str
-    x: int = 0
-    y: int = 0
-    angle: int = 0
 
 
 class WorldGenerator:

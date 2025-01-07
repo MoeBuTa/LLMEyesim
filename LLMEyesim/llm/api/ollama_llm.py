@@ -4,20 +4,20 @@ from loguru import logger
 import requests
 from requests.adapters import HTTPAdapter, Retry
 
-from LLMEyesim.llm.api.base import BaseAgent
+from LLMEyesim.llm.api.base import BaseLLM
 from LLMEyesim.llm.api.config import OLLAMA_MODEL_CONFIGS
 
 
-class OllamaAgent(BaseAgent):
-    def __init__(self, name: str, agent_type:str, api_base: Optional[str] = None):
+class OllamaLLM(BaseLLM):
+    def __init__(self, name: str, llm_type:str, api_base: Optional[str] = None):
         """
-        Initialize OllamaAgent with model name and optional API base URL.
+        Initialize OllamaLLM with model name and optional API base URL.
 
         Args:
             name: Name of the Ollama model to use (e.g., 'llama2', 'mistral')
             api_base: Optional API base URL. If not provided, will use default from config
         """
-        super().__init__(name, agent_type)
+        super().__init__(name, llm_type)
         self.model = self._init_model_config()
         self.session = self._init_session(api_base)
 

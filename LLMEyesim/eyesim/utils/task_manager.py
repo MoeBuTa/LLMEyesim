@@ -1,5 +1,4 @@
 import csv
-from dataclasses import dataclass
 from pathlib import Path
 import shutil
 from typing import Any, Dict
@@ -7,17 +6,8 @@ from typing import Any, Dict
 from loguru import logger
 import pandas as pd
 
+from LLMEyesim.eyesim.utils.models import TaskPaths
 from LLMEyesim.utils.constants import DATA_DIR
-
-
-@dataclass
-class TaskPaths:
-    task_name: str
-    img_path: Path
-    task_path: Path
-    state_path: Path
-    llm_reasoning_record_path: Path
-    llm_action_record_path: Path
 
 
 class TaskManager:

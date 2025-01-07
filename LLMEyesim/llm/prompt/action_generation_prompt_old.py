@@ -49,7 +49,7 @@ class ActionGenerationPromptOld:
         return self.system_prompt
 
     @staticmethod
-    def format_user_prompt(self, images, human_instruction: str = None, last_command: str = None):
+    def format_user_prompt(images, human_instruction: str = None, last_command: str = None):
         if human_instruction is None:
             human_instruction = "Continue completing the current task"
         if last_command is None:

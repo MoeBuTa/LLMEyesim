@@ -5,22 +5,22 @@ from loguru import logger
 from openai import NotGiven, OpenAI
 from openai.types.chat import ChatCompletionMessageParam, completion_create_params
 
-from LLMEyesim.llm.api.base import BaseAgent
+from LLMEyesim.llm.api.base import BaseLLM
 from LLMEyesim.llm.api.config import CLOUD_MODEL_CONFIGS
 from LLMEyesim.utils.constants import OPENAI_API_KEY
 
 
-class CloudAgent(BaseAgent):
-    def __init__(self, name: str, agent_type: str, api_key: Optional[str] = None):
+class CloudLLM(BaseLLM):
+    def __init__(self, name: str, llm_type: str, api_key: Optional[str] = None):
         """
-        Initialize CloudAgent with model name and optional API key.
+        Initialize CloudLLM with model name and optional API key.
 
         Args:
             name: Name of the model to use (e.g., 'gpt-4')
             api_key: Optional OpenAI API key. If not provided, will look for
                     OPENAI_API_KEY in environment variables or .env file
         """
-        super().__init__(name, agent_type)
+        super().__init__(name, llm_type)
         self.model = self._init_model_config()
         self.client = self._init_openai_client()
 
@@ -84,7 +84,7 @@ class CloudAgent(BaseAgent):
             )
             usage = response.usage.dict() if response.usage else None
             response = json.loads(response.choices[0].message.content)
-            logger.info(f"Response from agent: {response}")
+            logger.info(f"Response from llm: {response}")
             return {
                 "model": self.model["model"],
                 "input": messages,
@@ -113,7 +113,7 @@ class CloudAgent(BaseAgent):
             )
             usage = response.usage
             response = json.loads(response.choices[0].message.content)
-            logger.info(f"Response from agent: {response}")
+            logger.info(f"Response from llm: {response}")
             return {
                 "model": self.model["model"],
                 "input": messages,

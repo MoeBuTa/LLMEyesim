@@ -1,16 +1,16 @@
-class AgentError(Exception):
-    """Base exception for agent-related errors"""
+class LLMError(Exception):
+    """Base exception for llm-related errors"""
 
     pass
 
 
-class InvalidAgentType(AgentError):
-    """Raised when an invalid agent type is specified"""
+class InvalidLLMType(LLMError):
+    """Raised when an invalid llm type is specified"""
 
     pass
 
 
-class ConfigurationError(AgentError):
-    """Raised when there's an error in agent configuration"""
+class ConfigurationError(LLMError):
+    """Raised when there's an error in llm configuration"""
 
     pass

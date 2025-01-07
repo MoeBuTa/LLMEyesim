@@ -2,10 +2,10 @@ from abc import abstractmethod
 from typing import Any
 
 
-class BaseAgent:
-    def __init__(self, name: str, agent_type: str):
+class BaseLLM:
+    def __init__(self, name: str, llm_type: str):
         self.name = name
-        self.agent_type = agent_type
+        self.llm_type = llm_type
 
 
     @abstractmethod

@@ -8,7 +8,7 @@ from loguru import logger
 from LLMEyesim.eyesim.actuator.actuator import Action, RobotActuator
 from LLMEyesim.eyesim.utils.image_process import ImageProcess
 from LLMEyesim.eyesim.utils.task_manager import TaskManager
-from LLMEyesim.llm.agents.multi_modal_agent import MultiModalAgent
+from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
 from LLMEyesim.simulation.models import SimulatorConfig
 from LLMEyesim.utils.constants import DATA_DIR
 
@@ -28,10 +28,10 @@ class Simulator:
             robot_id = next((i for i, item in enumerate(self.items) if item.item_name == "S4"), -1) + 1
 
             self.actuator = RobotActuator(robot_id, "S4")
-            self.agent = MultiModalAgent(
+            self.agent = ExecutiveAgent(
                 task_name=self.config.task_name,
-                agent_name=self.config.agent_name,
-                agent_type=self.config.agent_type
+                llm_name=self.config.llm_name,
+                llm_type=self.config.llm_type
             )
             self.task_manager = TaskManager(task_name=self.config.task_name)
             self.image_process: ImageProcess = ImageProcess()
@@ -341,7 +341,7 @@ class Simulator:
         return {
             "step": step,
             "task_name": self.agent.task_name,
-            "model_name": self.agent.agent_name,
+            "model_name": self.agent.llm_name,
             "perception": perception,
             "planning": planning,
             "control": control,

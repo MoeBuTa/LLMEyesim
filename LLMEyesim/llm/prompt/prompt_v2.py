@@ -1,4 +1,4 @@
-from LLMEyesim.llm.prompt.models import SystemPrompt, UserPrompt, EnvironmentInformation
+from LLMEyesim.llm.prompt.models import EnvironmentInformation, SystemPrompt, UserPrompt
 
 
 class PromptV2:

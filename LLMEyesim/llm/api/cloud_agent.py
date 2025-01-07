@@ -5,8 +5,8 @@ from loguru import logger
 from openai import NotGiven, OpenAI
 from openai.types.chat import ChatCompletionMessageParam, completion_create_params
 
-from LLMEyesim.llm.agents.base import BaseAgent
-from LLMEyesim.llm.agents.config import CLOUD_MODEL_CONFIGS
+from LLMEyesim.llm.api.base import BaseAgent
+from LLMEyesim.llm.api.config import CLOUD_MODEL_CONFIGS
 from LLMEyesim.utils.constants import OPENAI_API_KEY
 
 

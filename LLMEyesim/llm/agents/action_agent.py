@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from LLMEyesim.llm.agents.manager import AgentManager
+from LLMEyesim.llm.api.manager import AgentManager
 from LLMEyesim.llm.prompt.action_generation_prompt_old import ActionGenerationPromptOld
 
 

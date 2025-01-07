@@ -1,4 +1,4 @@
-class MultiModalPrompt:
+class PromptV1:
     def __init__(self, enable_defence: bool = False):
         self.enable_defence = enable_defence
         self.security_prompt = """

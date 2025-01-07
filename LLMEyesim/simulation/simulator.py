@@ -24,8 +24,8 @@ class Simulator:
     def _initialize_components(self) -> None:
         """Initialize simulator components with error handling"""
         try:
-            self.items = self.config.items
-            robot_id = next((i for i, item in enumerate(self.items) if item.item_name == "S4"), -1) + 1
+            self.world_items = self.config.world_items
+            robot_id = next((i for i, item in enumerate(self.world_items) if item.item_name == "S4"), -1) + 1
 
             self.actuator = RobotActuator(robot_id, "S4")
             self.agent = ExecutiveAgent(
@@ -160,7 +160,7 @@ class Simulator:
             self.actuator.update_sensors_parallel()
 
             for i in range(1, self.config.max_steps + 1):
-                for i, item in enumerate(self.items):
+                for i, item in enumerate(self.world_items):
                     logger.info(f"Processing item {i+1} {item.item_name} {item.item_type}")
                     pos = [item.x, item.y, item.angle]
                     if item.item_type == "robot":

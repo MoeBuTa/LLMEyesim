@@ -6,7 +6,7 @@ from typing import List
 class SimulatorConfig:
     """Configuration for the simulator with immutable attributes"""
     task_name: str
-    items: List = None
+    world_items: List = None
     llm_name: str = "gpt-4o-mini"
     llm_type: str = "cloud"
     attack: str = ""
@@ -21,6 +21,6 @@ class SimulatorConfig:
 class SimulatorV2Config:
     """Configuration for the simulator with immutable attributes"""
     task_name: str
-    items: List = None
+    world_items: List = None
     llm_name: str = "gpt-4o-mini"
     llm_type: str = "cloud"

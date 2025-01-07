@@ -8,7 +8,7 @@ class DemoWorld(WorldGenerator):
         super().__init__(world_name=world_name)
 
     def init_sim(self):
-        labbot = self.create_robot(robot_name="LabBot", x=229, y=591, angle=20, script="labbot.py")
+        labbot = self.create_robot(robot_name="LabBot", x=229, y=591, angle=0, script="labbot.py")
         s4 = self.create_robot(robot_name="S4", x=432, y=1659, angle=0, script="s4.py")
         robots = labbot + s4
         

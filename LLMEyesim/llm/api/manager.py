@@ -1,9 +1,9 @@
 from typing import Any, Dict
 
-from LLMEyesim.llm.agents.base import BaseAgent
-from LLMEyesim.llm.agents.cloud_agent import CloudAgent
-from LLMEyesim.llm.agents.exceptions import InvalidAgentType
-from LLMEyesim.llm.agents.ollama_agent import OllamaAgent
+from LLMEyesim.llm.api.base import BaseAgent
+from LLMEyesim.llm.api.cloud_agent import CloudAgent
+from LLMEyesim.llm.api.exceptions import InvalidAgentType
+from LLMEyesim.llm.api.ollama_agent import OllamaAgent
 
 
 class AgentManager:

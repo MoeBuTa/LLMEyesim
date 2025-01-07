@@ -1,5 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
 from functools import lru_cache
 import time
 from typing import Dict, List, Tuple
@@ -7,26 +5,12 @@ from typing import Dict, List, Tuple
 from eye import *
 from loguru import logger
 
-from LLMEyesim.eyesim.utils.actuator import Action, RobotActuator
+from LLMEyesim.eyesim.actuator.actuator import Action, RobotActuator
 from LLMEyesim.eyesim.utils.image_process import ImageProcess
 from LLMEyesim.eyesim.utils.task_manager import TaskManager
-from LLMEyesim.llm.agents.action_agent import ActionAgent
+from LLMEyesim.llm.agents.multi_modal_agent import MultiModalAgent
+from LLMEyesim.simulation.models import SimulatorConfig
 from LLMEyesim.utils.constants import DATA_DIR
-
-
-@dataclass(frozen=True)
-class SimulatorConfig:
-    """Configuration for the simulator with immutable attributes"""
-    task_name: str
-    items: List = None
-    agent_name: str = "gpt-4o-mini"
-    agent_type: str = "cloud"
-    attack: str = ""
-    attack_rate: float = 0.5
-    enable_defence: bool = False
-    max_steps: int = 20
-    red_detection_threshold: int = 100
-    failure_retry_threshold: int = 3
 
 
 class Simulator:
@@ -36,7 +20,6 @@ class Simulator:
         """Initialize simulator with configuration parameters"""
         self.config = SimulatorConfig(**kwargs)
         self._initialize_components()
-        self._executor = ThreadPoolExecutor(max_workers=4)  # For parallel operations
 
     def _initialize_components(self) -> None:
         """Initialize simulator components with error handling"""
@@ -45,7 +28,7 @@ class Simulator:
             robot_id = next((i for i, item in enumerate(self.items) if item.item_name == "S4"), -1) + 1
 
             self.actuator = RobotActuator(robot_id, "S4")
-            self.agent = ActionAgent(
+            self.agent = MultiModalAgent(
                 task_name=self.config.task_name,
                 agent_name=self.config.agent_name,
                 agent_type=self.config.agent_type
@@ -194,8 +177,7 @@ class Simulator:
         except Exception as e:
             logger.error(f"Simulator run failed: {str(e)}")
             return "failed"
-        finally:
-            self._executor.shutdown()
+
 
     def _process_iteration(self, i: int, interval: int, iterations_per_rate: int) -> bool:
         """Process a single iteration of the simulator"""
@@ -261,7 +243,7 @@ class Simulator:
     def _process_action_with_agent(self, human_instruction: str, images: List) -> Dict:
         """Process action with the agent"""
 
-        return self.agent.process_action(
+        return self.agent.process(
             human_instruction=human_instruction,
             last_command=self.actuator.format_last_command(),
             images=images,

@@ -1,8 +1,7 @@
 import base64
-from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Literal, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from PIL import Image
 from eye import QVGA_X, QVGA_Y
@@ -10,19 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-
-@dataclass
-class PlotConfig:
-    """Configuration for plot styling and parameters"""
-    figsize: Tuple[int, int] = (3, 3)
-    dpi: int = 100
-    style: Literal["white", "darkgrid", "dark", "whitegrid", "ticks"] = "white"  # Changed default to "white"
-    context: str = "notebook"  # Added context parameter
-    cmap: str = "viridis"
-    alpha: float = 0.7
-    grid_color: str = "gray"
-    grid_alpha: float = 0.3
-    marker_size: int = 10
+from LLMEyesim.eyesim.utils.models import PlotConfig
 
 
 class ImageProcess:

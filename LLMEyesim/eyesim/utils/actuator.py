@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from functools import lru_cache
+import math
 from typing import Dict, List, Optional, Tuple
 
 from eye import *
@@ -7,7 +8,6 @@ from loguru import logger
 import numpy as np
 
 from LLMEyesim.eyesim.utils.config import GRID_DIRECTION
-import math
 
 
 @dataclass(frozen=True)

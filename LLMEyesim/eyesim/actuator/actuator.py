@@ -29,14 +29,11 @@ class RobotActuator:
 
     def _initialize_hardware(self) -> None:
         """Initialize hardware with proper error handling"""
-        try:
-            CAMInit(QVGA)
-            self.img = CAMGet()
-            self.scan = LIDARGet()
-            self.update_position()
-        except Exception as e:
-            logger.error(f"Hardware initialization failed: {str(e)}")
-            raise RuntimeError(f"Hardware initialization failed: {str(e)}")
+        CAMInit(QVGA)
+        self.img = CAMGet()
+        self.scan = LIDARGet()
+        self.update_position()
+
 
     def update_sensors_parallel(self) -> None:
         """Update sensors in parallel using threads"""
@@ -46,13 +43,9 @@ class RobotActuator:
 
     def update_position(self) -> None:
         """Update robot position state by creating new Position instance"""
-        try:
-            pos = [int.from_bytes(x, byteorder='little') for x in SIMGetRobot(self.robot_id)]
-            logger.info(f"Updating position: {pos}")
-            self.position = Position(x=pos[0], y=pos[1], phi=pos[3])
-        except Exception as e:
-            logger.error(f"State update failed: {e}")
-            raise
+        pos = [int.from_bytes(x, byteorder='little') for x in SIMGetRobot(self.robot_id)]
+        self.position = Position(x=pos[0], y=pos[1], phi=pos[3])
+
 
     def format_last_command(self) -> Optional[List[str]]:
         """Format last command for output"""

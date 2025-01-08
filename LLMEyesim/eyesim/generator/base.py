@@ -66,7 +66,7 @@ class WorldGenerator:
 # world 
 world {world_file}
 
-settings TRACE
+settings VIS TRACE
 
 # Robots
 {robots}

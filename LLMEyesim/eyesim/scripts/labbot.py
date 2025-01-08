@@ -20,8 +20,7 @@ while not stop:
     else:
         VWStraight(-25, 50)   # back up
         VWWait()
-        dir = int(((random() - 0.5))*180)
+        dir = int((random() - 0.5) * 180)
         VWTurn(180, 45)      # turn random angle
         VWWait()
     OSWait(100)
-                

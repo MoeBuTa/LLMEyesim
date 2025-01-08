@@ -2,15 +2,17 @@ import argparse
 import subprocess
 import sys
 import time
-from typing import Any, Dict, List, Union
+from typing import Any, Dict
 
 from loguru import logger
 
 from LLMEyesim.eyesim.generator.manager import WorldManager
 from LLMEyesim.simulation.simulator import Simulator
-from LLMEyesim.utils.constants import DATA_DIR
+from LLMEyesim.simulation.simulator_v2 import SimulatorV2
+from LLMEyesim.utils.helper import float_in_list, set_task_name, str2bool
 
 DEFAULT_CONFIG = {
+    "mode": "2",
     "world": "demo",
     "model": "gpt-4o-mini",
     "attack": "none",
@@ -18,57 +20,19 @@ DEFAULT_CONFIG = {
     "attack_rate": 0.5
 }
 
-def str2bool(value: Union[str, bool]) -> bool:
-    """Convert string to boolean."""
-    if isinstance(value, bool):
-        return value
-    if value.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    if value.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    raise argparse.ArgumentTypeError('Boolean value expected')
-
-
-def float_in_list(choices: List[float]) -> callable:
-    """Create a validator for float values within a set of choices."""
-
-    def check_float(value: str) -> float:
-        try:
-            float_val = float(value)
-            if float_val in choices:
-                return float_val
-            raise argparse.ArgumentTypeError(
-                f'Value must be one of {choices}, got {float_val}'
-            )
-        except ValueError:
-            raise argparse.ArgumentTypeError(
-                f'Value must be a float, got {value}'
-            )
-
-    return check_float
-
-
-def set_task_name(task: str) -> str:
-    """Generate numbered task folder name."""
-    try:
-        max_num = max(
-            (int(folder.name.split("_")[-1])
-             for folder in DATA_DIR.iterdir()
-             if folder.name.startswith(task) and
-             folder.name.split("_")[-1].isdigit()),
-            default=0
-        )
-        return f"{task}_{max_num + 1}"
-    except Exception as e:
-        logger.error(f"Error generating task name: {e}")
-        return f"{task}_1"
-
 
 def create_parser() -> argparse.ArgumentParser:
     """Create and configure argument parser."""
     parser = argparse.ArgumentParser(description='Run the robot with different prompts.')
 
-    # World environment selection
+    parser.add_argument(
+        '--mode',
+        type=str,
+        default=DEFAULT_CONFIG["mode"],
+        choices=['1', '2'],
+        help='Select the mode to run the simulation'
+    )
+
     parser.add_argument(
         '--world',
         type=str,
@@ -141,6 +105,7 @@ def setup_simulation(args: Dict[str, Any]) -> Simulator:
         Simulator: Configured simulator instance
     """
     # Use dictionary get() method with defaults
+    mode = args.get("mode", DEFAULT_CONFIG["mode"])
     world = args.get("world", DEFAULT_CONFIG["world"])
     attack = args.get("attack", DEFAULT_CONFIG["attack"])
     model = args.get("model", DEFAULT_CONFIG["model"])
@@ -155,19 +120,27 @@ def setup_simulation(args: Dict[str, Any]) -> Simulator:
         raise
 
     launch_eyesim()
-    time.sleep(5)
+    time.sleep(5)  # Wait for eyesim to launch, Adjust it as needed
 
-    task_name = set_task_name(f"{world}_{model}_{attack}_{defence}_{attack_rate}")
+    if mode == "1":
+        task_name = set_task_name(f"{world}_{model}_{attack}")
+        simulator = Simulator(
+            task_name=task_name,
+            attack=attack,
+            llm_name=model,
+            llm_type="cloud",
+            enable_defence=defence,
+            attack_rate=attack_rate,
+            world_items=world_manager.world.items
+        )
 
-    simulator = Simulator(
-        task_name=task_name,
-        attack=attack,
-        llm_name=model,
-        llm_type="cloud",
-        attack_rate=attack_rate,
-        enable_defence=defence,
-        items = world_manager.world.items
-    )
+    else:
+        simulator = SimulatorV2(
+            mission_name=set_task_name(f"{world}_{model}_{attack}"),
+            llm_name=model,
+            llm_type="cloud",
+            world_items=world_manager.world.items
+        )
     return simulator
 
 

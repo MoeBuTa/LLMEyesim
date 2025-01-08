@@ -6,9 +6,8 @@ from LLMEyesim.llm.prompt.prompt_v2 import PromptV2
 
 
 class ExecutiveAgent:
-    def __init__(self, task_name: str, llm_name="gpt-4o", llm_type="cloud"):
+    def __init__(self, llm_name="gpt-4o", llm_type="cloud"):
         self.llm = LLMManager(llm_name, llm_type)
-        self.task_name = task_name
         self.llm_name = llm_name
 
     def process(self, images: List, human_instruction: str = None, last_command=None,

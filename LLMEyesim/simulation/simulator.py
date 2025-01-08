@@ -29,7 +29,6 @@ class Simulator:
 
             self.actuator = RobotActuator(robot_id, "S4")
             self.agent = ExecutiveAgent(
-                task_name=self.config.task_name,
                 llm_name=self.config.llm_name,
                 llm_type=self.config.llm_type
             )

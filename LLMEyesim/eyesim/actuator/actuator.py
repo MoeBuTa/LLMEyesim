@@ -87,7 +87,7 @@ class RobotActuator:
         if direction not in GRID_DIRECTION:
             raise ValueError(f"Invalid direction: {direction}")
 
-        logger.info(f"Moving {direction}")
+        logger.info(f"{self.robot_name} {self.robot_id}: Moving {direction}")
         x, y, phi = self.position
         target_degree = GRID_DIRECTION[direction]
         while min((phi - target_degree) % 360, (target_degree - phi) % 360) >= angle_deviation:
@@ -95,7 +95,7 @@ class RobotActuator:
             self.update_position()
             x, y, phi = self.position
 
-        logger.info(f"Moving {distance} mm")
+        logger.info(f"{self.robot_name} {self.robot_id}: Moving {distance} mm")
         target_radian = math.radians(phi)
         target_x = x + int(distance * math.cos(target_radian))
         target_y = y + int(distance * math.sin(target_radian))

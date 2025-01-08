@@ -9,6 +9,7 @@ from loguru import logger
 from LLMEyesim.eyesim.generator.manager import WorldManager
 from LLMEyesim.simulation.simulator import Simulator
 from LLMEyesim.simulation.simulator_v2 import SimulatorV2
+from LLMEyesim.utils.constants import LOG_DIR
 from LLMEyesim.utils.helper import float_in_list, set_task_name, str2bool
 
 DEFAULT_CONFIG = {
@@ -19,7 +20,6 @@ DEFAULT_CONFIG = {
     "defence": False,
     "attack_rate": 0.5
 }
-
 
 def create_parser() -> argparse.ArgumentParser:
     """Create and configure argument parser."""
@@ -104,7 +104,6 @@ def setup_simulation(args: Dict[str, Any]) -> Simulator:
     Returns:
         Simulator: Configured simulator instance
     """
-    # Use dictionary get() method with defaults
     mode = args.get("mode", DEFAULT_CONFIG["mode"])
     world = args.get("world", DEFAULT_CONFIG["world"])
     attack = args.get("attack", DEFAULT_CONFIG["attack"])
@@ -137,6 +136,7 @@ def setup_simulation(args: Dict[str, Any]) -> Simulator:
     else:
         simulator = SimulatorV2(
             mission_name=set_task_name(f"{world}_{model}_{attack}"),
+            world_name=world,
             llm_name=model,
             llm_type="cloud",
             world_items=world_manager.world.items

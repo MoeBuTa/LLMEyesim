@@ -8,7 +8,7 @@ class DynamicWorld(WorldGenerator):
     def __init__(self, world_name: str):
         super().__init__(world_name=world_name)
 
-    def init_sim(self):
+    def init_sim(self, **kwargs):
         indices = random.sample(range(len(self.dynamic_obstacles)), 2)
 
         content = f"""

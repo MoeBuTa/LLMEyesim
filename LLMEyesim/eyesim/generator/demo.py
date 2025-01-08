@@ -7,9 +7,10 @@ class DemoWorld(WorldGenerator):
     def __init__(self, world_name: str):
         super().__init__(world_name=world_name)
 
-    def init_sim(self):
-        labbot = self.create_robot(robot_name="LabBot", x=229, y=591, angle=0, script="s4.py")
-        s4 = self.create_robot(robot_name="S4", x=432, y=1659, angle=0, script="s4.py")
+    def init_sim(self, llm_name: str='gpt-4o-mini', **kwargs):
+
+        labbot = self.create_robot(robot_name="LabBot", x=229, y=591, angle=0, script="llm_labbot.py")
+        s4 = self.create_robot(robot_name="S4", x=432, y=1659, angle=0, script="llm_s4.py")
         robots = labbot + s4
         
         can = self.create_object(object_name="Can", x=1663, y=274, angle=90)

@@ -28,6 +28,10 @@ class Position:
         yield self.y
         yield self.phi
 
+    def __str__(self) -> str:
+        """String representation of position"""
+        return f"Position(x={self.x}, y={self.y}, phi={self.phi})"
+
     def to_dict(self) -> Dict[str, int]:
         """Type-safe dictionary conversion"""
         return {"x": self.x, "y": self.y, "phi": self.phi}

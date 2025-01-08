@@ -43,7 +43,7 @@ class WorldGenerator:
                 print(f"Made {file.name} executable")
         os.chmod(self.world_file, 0o777)
 
-    def init_sim(self):
+    def init_sim(self, **kwargs):
         raise NotImplementedError
 
     def create_robot(self, robot_name: str, x: int, y: int, angle: int, script: str) -> str:

@@ -25,5 +25,5 @@ class WorldManager:
             )
         return self.world_type[world_name](world_name)
 
-    def init_sim(self):
-        return self.world.init_sim()
+    def init_sim(self, **kwargs):
+        return self.world.init_sim(**kwargs)

@@ -1,8 +1,7 @@
+from loguru import logger
+
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
 from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
-
-
-from loguru import logger
 
 
 class EmbodiedAgent:

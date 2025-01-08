@@ -1,10 +1,11 @@
+import multiprocessing
+
 from loguru import logger
 
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
 from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
 from LLMEyesim.simulation.embodied_agent import EmbodiedAgent
 from LLMEyesim.simulation.models import SimulatorV2Config
-import multiprocessing
 
 
 class SimulatorV2:

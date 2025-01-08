@@ -9,7 +9,7 @@ from loguru import logger
 from LLMEyesim.eyesim.generator.manager import WorldManager
 from LLMEyesim.simulation.simulator import Simulator
 from LLMEyesim.simulation.simulator_v2 import SimulatorV2
-from LLMEyesim.utils.helper import str2bool, float_in_list, set_task_name
+from LLMEyesim.utils.helper import float_in_list, set_task_name, str2bool
 
 DEFAULT_CONFIG = {
     "mode": "2",

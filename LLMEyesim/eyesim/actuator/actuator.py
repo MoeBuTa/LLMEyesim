@@ -56,25 +56,19 @@ class RobotActuator:
 
     def straight(self, distance: int, speed: int, direction: str) -> None:
         """Move robot straight with improved error handling"""
-        try:
-            factor = 1 if direction == "forward" else -1
-            VWStraight(factor * distance, speed)
-            VWWait()
-            self.update_position()
-        except Exception as e:
-            logger.error(f"Movement error: {e}")
-            raise
+        factor = 1 if direction == "forward" else -1
+        VWStraight(factor * distance, speed)
+        VWWait()
+        self.update_position()
+
 
     def turn(self, angle: int, speed: int, direction: str) -> None:
         """Turn robot with improved error handling"""
-        try:
-            factor = 1 if direction == "left" else -1
-            VWTurn(factor * angle, speed)
-            VWWait()
-            self.update_position()
-        except Exception as e:
-            logger.error(f"Turn error: {e}")
-            raise
+        factor = 1 if direction == "left" else -1
+        VWTurn(factor * angle, speed)
+        VWWait()
+        self.update_position()
+
 
     def move_grid(self, distance: int, direction: str, angle_deviation: int = 5, pos_deviation: int = 10) -> None:
         """

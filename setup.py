@@ -2,11 +2,11 @@ from setuptools import find_packages, setup
 
 setup(
     name="llmeyesim",
-    version="0.1.0",
+    version="1.0.2",
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'llmeyesim=LLMEyesim.cli:main',  # This makes the 'llmeyesim' command available
+            'llmeyesim=LLMEyesim.run:main',  # This makes the 'llmeyesim' command available
         ],
     },
     python_requires='>=3.10',  # Adjust based on your needs

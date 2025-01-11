@@ -76,7 +76,7 @@ class Simulator:
 
             act.pos_after = self.actuator.position.to_dict()
 
-            self.actuator.update_sensors_parallel()
+            self.actuator.update_sensors()
 
             _, _, max_value = self.actuator.red_detector(self.actuator.img)
 
@@ -156,7 +156,7 @@ class Simulator:
             iterations_per_rate = int(self.config.max_steps * self.config.attack_rate)
             interval = max(1, self.config.max_steps // iterations_per_rate)
 
-            self.actuator.update_sensors_parallel()
+            self.actuator.update_sensors()
 
             for i in range(1, self.config.max_steps + 1):
                 for i, item in enumerate(self.world_items):
@@ -339,7 +339,7 @@ class Simulator:
     ):
         return {
             "step": step,
-            "task_name": self.agent.task_name,
+            "task_name": self.task_manager.task_name,
             "model_name": self.agent.llm_name,
             "perception": perception,
             "planning": planning,

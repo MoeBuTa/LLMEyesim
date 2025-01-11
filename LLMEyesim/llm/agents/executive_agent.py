@@ -18,10 +18,10 @@ class ExecutiveAgent:
         messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}]
         return self.llm.process(messages=messages)
 
-    def process_v2(self, located_obstacles: str, located_target: str, current_position: str, action_queue: str,
+    def process_v2(self, exploration_records: str, robot_state: str,
                    prompt_type: str = 'zero_shot') -> Dict:
         system_prompt = PromptV2.create_system_prompt()
-        user_prompt = PromptV2.create_user_prompt(located_obstacles, located_target, current_position, action_queue)
+        user_prompt = PromptV2.create_user_prompt(exploration_records, robot_state)
         messages = [{"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}]
         if prompt_type == 'one_shot':
@@ -31,4 +31,4 @@ class ExecutiveAgent:
                         {"role": "user", "content": example_user_prompt},
                         {"role": "assistant", "content": example_assistant_prompt},
                         {"role": "user", "content": user_prompt}]
-        return self.llm.process(messages=messages)
+        return self.llm.process_v2(messages=messages)

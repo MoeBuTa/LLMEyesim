@@ -14,19 +14,17 @@ class PromptV2:
         return system_prompt.format_system_prompt()
 
     @staticmethod
-    def create_user_prompt(located_obstacles: str, located_target: str, current_position: str, action_queue: str) -> str:
-        information = EnvironmentInformation(located_obstacles=located_obstacles, located_target=located_target)
+    def create_user_prompt(exploration_records: str, robot_state: str) -> str:
+        information = EnvironmentInformation(exploration_records=exploration_records)
         environment_information =  information.format_environment_information()
-        user_prompt = UserPrompt(current_position=current_position, environment_information=environment_information, action_queue=action_queue)
+        user_prompt = UserPrompt(robot_state=robot_state, environment_information=environment_information)
         return user_prompt.format_user_prompt()
 
     @staticmethod
     def example_user_prompt() -> str:
-        located_obstacles = "(1, 1), (2, 2), (3, 3)"
-        located_target = "(4, 4)"
-        current_position = "The robot is currently at position (0, 0)."
-        action_queue = "The robot currently has a queue of actions"
-        return PromptV2.create_user_prompt(located_obstacles, located_target, current_position, action_queue)
+        exploration_records = "The robot has found the following items: target - location at (4, 4)"
+        robot_state = "The robot is currently at position (0, 0). The robot currently has a queue of actions"
+        return PromptV2.create_user_prompt(exploration_records, robot_state)
 
     @staticmethod
     def example_assistant_prompt() -> str:

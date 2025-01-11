@@ -35,6 +35,9 @@ class LLMManager:
     def process(self,**kwargs) -> Any:
         return self.llm.process(**kwargs)
 
+    def process_v2(self, **kwargs) -> Any:
+        return self.llm.process_v2(**kwargs)
+
     def get_llm_info(self) -> Dict[str, str]:
         return {
             "name": self.llm.name,

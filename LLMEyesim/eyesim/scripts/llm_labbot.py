@@ -3,7 +3,7 @@
 
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
 from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
-from LLMEyesim.simulation.embodied_agent import EmbodiedAgent
+from LLMEyesim.integration.embodied_agent import EmbodiedAgent
 
 if __name__ == '__main__':
 

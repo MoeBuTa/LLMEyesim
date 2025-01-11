@@ -9,7 +9,6 @@ from loguru import logger
 from LLMEyesim.eyesim.generator.manager import WorldManager
 from LLMEyesim.simulation.simulator import Simulator
 from LLMEyesim.simulation.simulator_v2 import SimulatorV2
-from LLMEyesim.utils.constants import LOG_DIR
 from LLMEyesim.utils.helper import float_in_list, set_task_name, str2bool
 
 DEFAULT_CONFIG = {
@@ -112,16 +111,15 @@ def setup_simulation(args: Dict[str, Any]) -> Simulator:
     attack_rate = args.get("attack_rate", DEFAULT_CONFIG["attack_rate"])
 
     try:
-        world_manager = WorldManager(world)
+        world_manager = WorldManager(world_name=world, llm_name=model)
         world_manager.init_sim()
     except Exception as e:
         logger.error(f"Failed to generate world: {e}")
         raise
 
-    launch_eyesim()
-    time.sleep(5)  # Wait for eyesim to launch, Adjust it as needed
-
     if mode == "1":
+        launch_eyesim()
+        time.sleep(5)  # Wait for eyesim to launch, Adjust it as needed
         task_name = set_task_name(f"{world}_{model}_{attack}")
         simulator = Simulator(
             task_name=task_name,
@@ -132,15 +130,15 @@ def setup_simulation(args: Dict[str, Any]) -> Simulator:
             attack_rate=attack_rate,
             world_items=world_manager.world.items
         )
-
     else:
         simulator = SimulatorV2(
             mission_name=set_task_name(f"{world}_{model}_{attack}"),
-            world_name=world,
             llm_name=model,
             llm_type="cloud",
-            world_items=world_manager.world.items
+            world=world_manager
         )
+        launch_eyesim()
+
     return simulator
 
 

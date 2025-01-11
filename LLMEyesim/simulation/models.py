@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import List
 
+from LLMEyesim.eyesim.generator.models import WorldItem
+
 
 @dataclass(frozen=True)
 class SimulatorConfig:
@@ -21,7 +23,9 @@ class SimulatorConfig:
 class SimulatorV2Config:
     """Configuration for the simulator with immutable attributes"""
     mission_name: str
-    world_items: List = None
+    world_items: List[WorldItem] = None
     llm_name: str = "gpt-4o-mini"
     llm_type: str = "cloud"
+
+
 

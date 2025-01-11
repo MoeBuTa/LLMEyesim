@@ -30,21 +30,22 @@ class RobotActuator:
     def _initialize_hardware(self) -> None:
         """Initialize hardware with proper error handling"""
         CAMInit(QVGA)
-        self.img = CAMGet()
-        self.scan = LIDARGet()
+        self.update_sensors()
         self.update_position()
 
 
-    def update_sensors_parallel(self) -> None:
+    def update_sensors(self) -> Tuple[List[int], np.ndarray]:
         """Update sensors in parallel using threads"""
         self.img = CAMGet()
-        LCDImage(self.img)
+        # LCDImage(self.img)
         self.scan = LIDARGet()
+        return self.scan, self.img
 
-    def update_position(self) -> None:
+    def update_position(self) -> Position:
         """Update robot position state by creating new Position instance"""
         pos = [int.from_bytes(x, byteorder='little') for x in SIMGetRobot(self.robot_id)]
         self.position = Position(x=pos[0], y=pos[1], phi=pos[3])
+        return self.position
 
 
     def format_last_command(self) -> Optional[List[str]]:
@@ -92,8 +93,8 @@ class RobotActuator:
         target_degree = GRID_DIRECTION[direction]
         while min((phi - target_degree) % 360, (target_degree - phi) % 360) >= angle_deviation:
             self.grid_turn(phi, target_degree)
-            self.update_position()
-            x, y, phi = self.position
+            x, y, phi = self.update_position()
+
 
         logger.info(f"{self.robot_name} {self.robot_id}: Moving {distance} mm")
         target_radian = math.radians(phi)
@@ -102,8 +103,9 @@ class RobotActuator:
         while self.calculate_distance(x, y, target_x, target_y) >= 10:
             distance = self.calculate_distance(x, y, target_x, target_y)
             self.grid_straight(distance)
-            self.update_position()
-            x, y, phi = self.position
+            x, y, phi = self.update_position()
+
+        self.update_sensors()
 
     @staticmethod
     def grid_turn(

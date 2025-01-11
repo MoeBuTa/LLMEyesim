@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Literal, Tuple
 
@@ -26,3 +27,36 @@ class TaskPaths:
     llm_action_record_path: Path
 
 
+class CardinalDirection(str, Enum):
+    """Enum for cardinal directions to avoid string literals"""
+    NORTH = "north"
+    NORTHEAST = "northeast"
+    EAST = "east"
+    SOUTHEAST = "southeast"
+    SOUTH = "south"
+    SOUTHWEST = "southwest"
+    WEST = "west"
+    NORTHWEST = "northwest"
+
+
+@dataclass
+class Obstacle:
+    """Dataclass for obstacle information"""
+    start_angle: int
+    end_angle: int
+    start_direction: CardinalDirection
+    end_direction: CardinalDirection
+    avg_distance: int
+    angular_width: int
+
+
+@dataclass
+class DetectedObject:
+    """Dataclass for detected object information"""
+    name: str
+    distance: int
+    angle: int
+    lidar_distance: int
+    confidence: int
+    x: int
+    y: int

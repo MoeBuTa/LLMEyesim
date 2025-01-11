@@ -124,3 +124,6 @@ class OllamaLLM(BaseLLM):
         except Exception as e:
             logger.error(f"Error processing input with Ollama: {str(e)}")
             raise
+
+    def process_v2(self, **kwargs):
+        pass

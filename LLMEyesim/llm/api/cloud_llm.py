@@ -56,7 +56,35 @@ class CloudLLM(BaseLLM):
             logger.error(f"Failed to initialize OpenAI client: {str(e)}")
             raise
 
-    def structured_process(
+    def process(self, messages: Iterable[ChatCompletionMessageParam],
+                response_format: completion_create_params.ResponseFormat | NotGiven = None, **kwargs) -> Any:
+        """
+        Query OpenAI API for ChatCompletion
+        """
+        if response_format is None:
+            response_format = {"type": "json_object"}
+        try:
+            logger.info(f"Processing with configurations: {self.model}")
+            response = self.client.chat.completions.create(
+                model=self.model["model"],
+                messages=messages,
+                response_format=response_format,
+            )
+            usage = response.usage
+            response = json.loads(response.choices[0].message.content)
+            logger.info(f"Response from llm: {response}")
+            return {
+                "model": self.model["model"],
+                "input": messages,
+                "status": "processed",
+                "response": response,
+                "usage": usage,
+            }
+        except Exception as e:
+            logger.error(f"Error processing input with OpenAI: {str(e)}")
+            raise
+
+    def process_v2(
             self,
             messages: Iterable[ChatCompletionMessageParam],
             response_format: completion_create_params.ResponseFormat | NotGiven,
@@ -93,34 +121,6 @@ class CloudLLM(BaseLLM):
                 "usage": usage,
             }
 
-        except Exception as e:
-            logger.error(f"Error processing input with OpenAI: {str(e)}")
-            raise
-
-    def process(self, messages: Iterable[ChatCompletionMessageParam],
-                response_format: completion_create_params.ResponseFormat | NotGiven = None, **kwargs) -> Any:
-        """
-        Query OpenAI API for ChatCompletion
-        """
-        if response_format is None:
-            response_format = {"type": "json_object"}
-        try:
-            logger.info(f"Processing with configurations: {self.model}")
-            response = self.client.chat.completions.create(
-                model=self.model["model"],
-                messages=messages,
-                response_format=response_format,
-            )
-            usage = response.usage
-            response = json.loads(response.choices[0].message.content)
-            logger.info(f"Response from llm: {response}")
-            return {
-                "model": self.model["model"],
-                "input": messages,
-                "status": "processed",
-                "response": response,
-                "usage": usage,
-            }
         except Exception as e:
             logger.error(f"Error processing input with OpenAI: {str(e)}")
             raise

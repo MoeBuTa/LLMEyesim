@@ -11,3 +11,7 @@ class BaseLLM:
     @abstractmethod
     def process(self, **kwargs) -> Any:
         pass
+
+    @abstractmethod
+    def process_v2(self, **kwargs) -> Any:
+        pass

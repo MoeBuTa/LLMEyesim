@@ -8,19 +8,21 @@ class SystemPrompt:
     environment: str = "a simulated environment."
     mission: str = "Your mission is to navigate to the target location."
     capabilities: str = """
-    You can move the robot in eight directions at a time: north, south, east, west, northeast, northwest, southeast, and southwest.
+You can move the robot in any of the eight directions by a distance of 100, 200, or 300 units per step. The directions are defined as follows: north (0°), northeast (45°), east (90°), southeast (135°), south (180°), southwest (225°), west (270°), and northwest (315°).
     """
     response: str = ""
 
     def format_system_prompt(self):
         return f"""
-        {self.role}
-        The robot is in {self.environment}.
-        Your mission is to {self.mission}.
-        Your robot has the following capabilities: {self.capabilities}.
-        Based on the summary of robot's current state, make actionable decisions from the capabilities to complete the goal.
-        Follow this JSON format to generate your decisions and justifications: 
-        {self.response}
+{self.role}
+The robot is in {self.environment}.
+Your mission is to {self.mission}.
+Your robot has the following capabilities: {self.capabilities}.
+You will receive the exploration records of the current environment, the robot's current position, and the action queue planned for the robot. 
+Based on this information, generate a full action queue by updating the current action queue to optimize its performance and ensure the mission is successfully completed. 
+
+Use JSON format to present your decisions along with justifications for each action.
+{self.response}
         """
 
 
@@ -28,25 +30,23 @@ class SystemPrompt:
 class UserPrompt:
     """Dataclass for user prompts."""
     environment_information: str = "The obstacles in the environment are located at the following positions: (1, 1), (2, 2), (3, 3). The target location is at position (4, 4)."
-    current_position: str = "The robot is currently at position (0, 0)."
-    action_queue: str = "The robot currently has a queue of actions"
+    robot_state: str = "The robot is currently at position (0, 0). The robot currently has a queue of actions"
 
     def format_user_prompt(self):
         return f"""
-         {self.environment_information}
-        {self.current_position}
-        {self.action_queue}
+Environment Information:        
+{self.environment_information}
+The Robot's Current State:
+{self.robot_state}
         """
 
 
 @dataclass
 class EnvironmentInformation:
     """Dataclass for environment information."""
-    located_obstacles: str
-    located_target: str
+    exploration_records: str
 
     def format_environment_information(self):
         return f"""
-        The obstacles in the environment are located at the following positions: {self.located_obstacles}.
-        The target location is at position {self.located_target}.
+        Currently the robot has found the following items: {self.exploration_records}
         """

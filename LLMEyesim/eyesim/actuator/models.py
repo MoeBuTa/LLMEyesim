@@ -30,7 +30,7 @@ class Position:
 
     def __str__(self) -> str:
         """String representation of position"""
-        return f"Position(x={self.x}, y={self.y}, phi={self.phi})"
+        return f"x={self.x}, y={self.y}, phi={self.phi}"
 
     def to_dict(self) -> Dict[str, int]:
         """Type-safe dictionary conversion"""
@@ -123,3 +123,5 @@ class Action:
 
         self.safe = all(self._calculate_safety(distance) for distance in scan_values)
         return self.safe
+
+

@@ -1,8 +1,8 @@
 #!/Users/wenxiao/miniconda3/envs/llmeyesim/bin/python
 
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
-from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
 from LLMEyesim.integration.embodied_agent import EmbodiedAgent
+from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
 
 if __name__ == "__main__":
         agent = ExecutiveAgent(llm_name='gpt-4o-mini', llm_type="cloud")

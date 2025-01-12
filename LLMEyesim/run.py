@@ -133,9 +133,9 @@ def setup_simulation(args: Dict[str, Any]) -> Simulator:
     else:
         simulator = SimulatorV2(
             mission_name=set_task_name(f"{world}_{model}_{attack}"),
+            world_items=world_manager.world.items,
             llm_name=model,
-            llm_type="cloud",
-            world=world_manager
+            llm_type="cloud"
         )
         launch_eyesim()
 

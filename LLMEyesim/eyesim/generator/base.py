@@ -4,8 +4,14 @@ from typing import List, Literal
 
 from loguru import logger
 
-from LLMEyesim.eyesim.generator.config import AVAILABLE_ROBOTS, AVAILABLE_OBJECTS, RANDOM_S4_LOCATIONS, \
-    RANDOM_CAN_LOCATIONS, RANDOM_LABBOT_LOCATIONS, RANDOM_SOCCER_LOCATIONS
+from LLMEyesim.eyesim.generator.config import (
+    AVAILABLE_OBJECTS,
+    AVAILABLE_ROBOTS,
+    RANDOM_CAN_LOCATIONS,
+    RANDOM_LABBOT_LOCATIONS,
+    RANDOM_S4_LOCATIONS,
+    RANDOM_SOCCER_LOCATIONS,
+)
 from LLMEyesim.eyesim.generator.models import WorldItem
 from LLMEyesim.utils.constants import EYESIM_DIR, SCRIPT_DIR, WORLD_DIR
 
@@ -54,23 +60,23 @@ class WorldGenerator:
     def create_robot(self, robot_name: str, x: int, y: int, angle: int) -> None:
         if robot_name not in AVAILABLE_ROBOTS:
             raise ValueError(f"Robot {robot_name} is not in the list of available robots")
-        self.robots.append(WorldItem(item_name=robot_name, item_type='robot', x=x, y=y, angle=angle))
-        self.robot_settings += f"{robot_name} {x} {y} {angle} {SCRIPT_DIR}/{self.llm_name}_{robot_name}_{len(self.robots)}.py\n"
+        item_id = len(self.robots) + 1
+        self.robots.append(WorldItem(item_id=item_id, item_name=robot_name, item_type='robot', x=x, y=y, angle=angle))
+        self.robot_settings += f"{robot_name} {x} {y} {angle} {SCRIPT_DIR}/{self.llm_name}_{robot_name}_{item_id}.py\n"
 
     def create_object(self, object_name: str, object_type: Literal['target', 'obstacle', 'robot'], x: int, y: int,
                       angle: int) -> None:
         if object_name not in AVAILABLE_OBJECTS:
             raise ValueError(f"Object {object_name} is not in the list of available objects")
-        self.objects.append(WorldItem(item_name=object_name, item_type=object_type, x=x, y=y, angle=angle))
+        item_id = len(self.robots) + len(self.objects) + 1
+        self.objects.append(WorldItem(item_id=item_id, item_name=object_name, item_type=object_type, x=x, y=y, angle=angle))
         self.object_settings += f"{object_name} {x} {y} {angle}\n"
 
     def write_robot_script(self) -> None:
         logger.debug("Creating robot script content")
         try:
             for i, robot in enumerate(self.robots):
-                content = f"""
-#!/Users/wenxiao/miniconda3/envs/llmeyesim/bin/python
-
+                content = f"""#!/Users/wenxiao/miniconda3/envs/llmeyesim/bin/python
 
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
 from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
@@ -83,7 +89,7 @@ if __name__ == '__main__':
     actuator = RobotActuator(robot_id={i + 1}, robot_name='{robot.item_name}')
     embodied_agent = EmbodiedAgent(agent, actuator, world_items)
     embodied_agent.run_agent()
-                        """
+"""
                 script_file = f"{SCRIPT_DIR}/{self.llm_name}_{robot.item_name}_{i + 1}.py"
                 with open(script_file, "w") as f:
                     f.write(content)

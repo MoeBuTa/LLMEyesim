@@ -7,8 +7,8 @@ class PromptV2:
 
     @staticmethod
     def create_system_prompt() -> str:
-        environment = "a simulated environment."
-        mission = "Your mission is to navigate to the target location."
+        environment = "a simulated indoor environment."
+        mission = "Your mission is to navigate the robot to the red can."
         response = ""
         system_prompt = SystemPrompt(environment=environment, mission=mission, response=response)
         return system_prompt.format_system_prompt()

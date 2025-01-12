@@ -4,6 +4,7 @@ from typing import Literal
 
 @dataclass(frozen=True)
 class WorldItem:
+    item_id: int
     item_name: str
     item_type: Literal['robot', 'obstacle', 'target']
     x: int = 0

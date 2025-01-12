@@ -7,6 +7,7 @@ from openai.types.chat import ChatCompletionMessageParam, completion_create_para
 
 from LLMEyesim.llm.api.base import BaseLLM
 from LLMEyesim.llm.api.config import CLOUD_MODEL_CONFIGS
+from LLMEyesim.llm.response.models import ActionQueue
 from LLMEyesim.utils.constants import OPENAI_API_KEY
 
 
@@ -87,7 +88,7 @@ class CloudLLM(BaseLLM):
     def process_v2(
             self,
             messages: Iterable[ChatCompletionMessageParam],
-            response_format: completion_create_params.ResponseFormat | NotGiven,
+            response_format: completion_create_params.ResponseFormat | NotGiven = ActionQueue,
     ) -> Any:
         """
         Process input using the OpenAI client.

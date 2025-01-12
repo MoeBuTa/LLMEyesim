@@ -5,11 +5,20 @@ from loguru import logger
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
 from LLMEyesim.eyesim.actuator.models import Position
 from LLMEyesim.eyesim.generator.models import WorldItem
-from LLMEyesim.eyesim.utils.lidar_detection import calculate_object_positions, detect_obstacles, update_object_positions
+from LLMEyesim.eyesim.utils.lidar_detection import (
+    calculate_object_positions,
+    detect_obstacles,
+    update_object_positions,
+)
 from LLMEyesim.eyesim.utils.models import ObjectPosition, ObstacleRegion
 from LLMEyesim.integration.config import MAXIMUM_STEP
-from LLMEyesim.integration.models import LLMRecord, RobotStateRecord, RobotAction, ExplorationRecordList, \
-    ExplorationRecord
+from LLMEyesim.integration.models import (
+    ExplorationRecord,
+    ExplorationRecordList,
+    LLMRecord,
+    RobotAction,
+    RobotStateRecord,
+)
 from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
 from LLMEyesim.utils.constants import LOG_DIR
 

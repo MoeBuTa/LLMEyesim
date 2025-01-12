@@ -4,8 +4,14 @@ from typing import List, Literal
 
 from loguru import logger
 
-from LLMEyesim.eyesim.generator.config import AVAILABLE_ROBOTS, AVAILABLE_OBJECTS, RANDOM_S4_LOCATIONS, \
-    RANDOM_CAN_LOCATIONS, RANDOM_LABBOT_LOCATIONS, RANDOM_SOCCER_LOCATIONS
+from LLMEyesim.eyesim.generator.config import (
+    AVAILABLE_OBJECTS,
+    AVAILABLE_ROBOTS,
+    RANDOM_CAN_LOCATIONS,
+    RANDOM_LABBOT_LOCATIONS,
+    RANDOM_S4_LOCATIONS,
+    RANDOM_SOCCER_LOCATIONS,
+)
 from LLMEyesim.eyesim.generator.models import WorldItem
 from LLMEyesim.utils.constants import EYESIM_DIR, SCRIPT_DIR, WORLD_DIR
 

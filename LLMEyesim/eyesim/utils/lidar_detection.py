@@ -1,9 +1,7 @@
 from typing import List, Tuple
 
 from LLMEyesim.eyesim.generator.models import WorldItem
-from LLMEyesim.eyesim.utils.models import ObstacleRegion, ObjectPosition
-
-
+from LLMEyesim.eyesim.utils.models import ObjectPosition, ObstacleRegion
 
 
 def detect_obstacles(

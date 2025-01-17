@@ -1,24 +1,51 @@
-from LLMEyesim.llm.prompt.models import EnvironmentInformation, SystemPrompt, UserPrompt
-
-
 class PromptV2:
     def __init__(self):
         pass
 
     @staticmethod
-    def create_system_prompt() -> str:
-        environment = "a simulated indoor environment."
-        mission = "Your mission is to navigate the robot to the red can."
-        response = ""
-        system_prompt = SystemPrompt(environment=environment, mission=mission, response=response)
-        return system_prompt.format_system_prompt()
+    def create_system_prompt(role_description: str="", environment_description: str="", mission_description: str="", capabilities_description: str="", response_description: str="") -> str:
+        role = role_description if role_description else """
+        You are an executive agent in a mobile robotic system.
+        """
+
+        environment = environment_description if environment_description else """
+        a simulated indoor environment.
+        """
+
+        mission = mission_description if mission_description else """
+        Your mission is to navigate the robot to the red can.
+        """
+
+        capabilities = capabilities_description if capabilities_description else """
+        You can move the robot in any of the eight directions by a distance of 100, 200, or 300 units per step. The directions are defined as follows: north (0°), northeast (45°), east (90°), southeast (135°), south (180°), southwest (225°), west (270°), and northwest (315°).
+        """
+
+        response = response_description if response_description else ""
+        return f"""
+{role}
+The robot is in {environment}.
+Your mission is to {mission}.
+Your robot has the following capabilities: {capabilities}.
+You will receive the exploration records of the current environment, the robot's current position, and the action queue planned for the robot. 
+Based on this information, generate a full action queue by updating the current action queue to avoid obstacles, optimize its performance, and ensure the mission is successfully completed. 
+Present your decisions along with justifications for each action.
+{response}"""
+
 
     @staticmethod
-    def create_user_prompt(exploration_records: str, robot_state: str) -> str:
-        information = EnvironmentInformation(exploration_records=exploration_records)
-        environment_information =  information.format_environment_information()
-        user_prompt = UserPrompt(robot_state=robot_state, environment_information=environment_information)
-        return user_prompt.format_user_prompt()
+    def create_user_prompt(exploration_records_description: str="", robot_state_description: str="") -> str:
+
+        exploration_records = exploration_records_description if exploration_records_description else ""
+
+        robot_state = robot_state_description if robot_state_description else ""
+
+        return f"""
+Currently the robot has found the following items:       
+{exploration_records}
+The Robot's Current State:
+{robot_state}
+        """
+
 
     @staticmethod
     def example_user_prompt() -> str:

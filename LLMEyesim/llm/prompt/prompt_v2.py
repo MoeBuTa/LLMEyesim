@@ -6,7 +6,7 @@ class PromptV2:
     def create_system_prompt(role_description: str="", environment_description: str="", mission_description: str="", capabilities_description: str="", response_description: str="") -> str:
         role = role_description if role_description else """You are an executive agent in a mobile robotic system. """
 
-        environment = environment_description if environment_description else """a simulated indoor environment."""
+        environment = environment_description if environment_description else """a simulated 2000x2000 indoor environment."""
 
         mission = mission_description if mission_description else """navigate the robot to all targets in the environment."""
 
@@ -18,8 +18,8 @@ class PromptV2:
 The robot is in {environment}.
 Your mission is to {mission}.
 Your robot has the following capabilities: {capabilities}.
-You will receive the exploration records collected by the robot, the robot's current position, and the action queue planned for the robot. 
-Based on this information, generate a full action queue by updating the current action queue to avoid obstacles, optimize its performance, and ensure the mission is successfully completed. 
+You will receive the exploration records collected by the robot, the robot's current position in x,y, where x represents west (smaller) and east (larger), and y represents south (smaller) and north (larger), and the action queue planned for the robot. 
+Based on this information, generate a full action queue by updating the current action queue to avoid obstacles, keep the robot at least 200 units away from obstacles, optimize its performance, and ensure the mission is successfully completed. 
 Present your decisions along with justifications for each action.
 {response}"""
 
@@ -32,9 +32,7 @@ Present your decisions along with justifications for each action.
         robot_state = robot_state_description if robot_state_description else ""
 
         return f"""
-Currently the robot has found the following items:       
 {exploration_records}
-The Robot's Current State:
 {robot_state}
         """
 

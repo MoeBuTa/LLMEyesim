@@ -1,17 +1,12 @@
-import numpy as np
+DISTANCE_THRESHOLD = 1000
 
-from LLMEyesim.eyesim.utils.models import CardinalDirection
-
-CARDINAL_DIRECTION_LUT = np.array([
-    next(direction for angle, direction in {
-        0: CardinalDirection.NORTH,
-        45: CardinalDirection.NORTHEAST,
-        90: CardinalDirection.EAST,
-        135: CardinalDirection.SOUTHEAST,
-        180: CardinalDirection.SOUTH,
-        225: CardinalDirection.SOUTHWEST,
-        270: CardinalDirection.WEST,
-        315: CardinalDirection.NORTHWEST
-    }.items() if abs((i - angle + 180) % 360 - 180) == min(abs((i - a + 180) % 360 - 180) for a in {0, 45, 90, 135, 180, 225, 270, 315}))
-    for i in range(360)
-])
+DIRECTION_RANGES = {
+    'north': (67.5, 112.5),
+    'east': (337.5, 22.5),
+    'south': (247.5, 292.5),
+    'west': (157.5, 202.5),
+    'northeast': (22.5, 67.5),
+    'southeast': (292.5, 337.5),
+    'southwest': (202.5, 247.5),
+    'northwest': (112.5, 157.5)
+}

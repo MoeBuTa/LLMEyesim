@@ -1,12 +1,13 @@
 from typing import List, Tuple
 
 from LLMEyesim.eyesim.generator.models import WorldItem
+from LLMEyesim.eyesim.utils.config import DISTANCE_THRESHOLD
 from LLMEyesim.eyesim.utils.models import ObjectPosition, ObstacleRegion
 
 
 def detect_obstacles(
         lidar_data: List[int],
-        distance_threshold: int = 500,
+        distance_threshold: int = 1000,  # Default threshold
         min_width: int = 3
 ) -> List[ObstacleRegion]:
     """
@@ -16,7 +17,7 @@ def detect_obstacles(
         distance_threshold: Maximum distance to consider as obstacle
         min_width: Minimum width in degrees to consider as valid obstacle
     Returns:
-        List of obstacle regions with start angle, end angle, and minimum distance
+        List of obstacle regions with start angle, end angle, minimum distance, and directions
     """
     obstacles: List[ObstacleRegion] = []
     start_idx: int | None = None
@@ -60,11 +61,12 @@ def detect_obstacles(
 
     return obstacles
 
+
 def calculate_object_positions(
         robot_pos: Tuple[int, int],
         objects: List[WorldItem],
         lidar_data: List[int],
-        distance_threshold: int = 100
+        distance_threshold: int = 200
 ) -> List[ObjectPosition]:
     """
     Match lidar readings with known objects in the environment.

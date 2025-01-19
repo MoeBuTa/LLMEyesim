@@ -36,6 +36,9 @@ class Position:
         """Type-safe dictionary conversion"""
         return {"x": self.x, "y": self.y, "phi": self.phi}
 
+    def describe(self) -> str:
+        """Generate a natural language description of the position"""
+        return f"position ({self.x}, {self.y}) facing {self.phi}°"
 
 @dataclass
 class Action:

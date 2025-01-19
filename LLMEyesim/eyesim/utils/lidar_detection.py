@@ -6,7 +6,7 @@ from LLMEyesim.eyesim.utils.models import ObjectPosition, ObstacleRegion
 
 def detect_obstacles(
         lidar_data: List[int],
-        distance_threshold: int = 200,
+        distance_threshold: int = 500,
         min_width: int = 3
 ) -> List[ObstacleRegion]:
     """
@@ -62,10 +62,9 @@ def detect_obstacles(
 
 def calculate_object_positions(
         robot_pos: Tuple[int, int],
-        objects: List['WorldItem'],
+        objects: List[WorldItem],
         lidar_data: List[int],
-        angle_threshold: int = 2,
-        distance_threshold: int = 1
+        distance_threshold: int = 100
 ) -> List[ObjectPosition]:
     """
     Match lidar readings with known objects in the environment.
@@ -74,7 +73,6 @@ def calculate_object_positions(
         robot_pos: Tuple of (x, y) representing robot position
         objects: List of WorldItem objects containing object information
         lidar_data: List of 360 integer distance readings (index 0 = 0 degrees, 359 = 359 degrees)
-        angle_threshold: Maximum angle difference in degrees to consider a match
         distance_threshold: Maximum distance difference in meters to consider a match
 
     Returns:
@@ -131,6 +129,7 @@ def calculate_object_positions(
                 detected_objects.append(ObjectPosition(
                     item_id=obj.item_id,
                     item_name=obj.item_name,
+                    item_type=obj.item_type,
                     distance=distance,
                     angle=angle,
                     lidar_distance=lidar_distance,

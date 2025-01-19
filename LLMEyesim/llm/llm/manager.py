@@ -1,9 +1,9 @@
 from typing import Any, Dict
 
-from LLMEyesim.llm.api.base import BaseLLM
-from LLMEyesim.llm.api.cloud_llm import CloudLLM
-from LLMEyesim.llm.api.exceptions import InvalidLLMType
-from LLMEyesim.llm.api.ollama_llm import OllamaLLM
+from LLMEyesim.llm.llm.base import BaseLLM
+from LLMEyesim.llm.llm.cloud_llm import CloudLLM
+from LLMEyesim.llm.llm.exceptions import InvalidLLMType
+from LLMEyesim.llm.llm.ollama_llm import OllamaLLM
 
 
 class LLMManager:

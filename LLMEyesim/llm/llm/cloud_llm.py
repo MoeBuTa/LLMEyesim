@@ -5,8 +5,8 @@ from loguru import logger
 from openai import NotGiven, OpenAI
 from openai.types.chat import ChatCompletionMessageParam, completion_create_params
 
-from LLMEyesim.llm.api.base import BaseLLM
-from LLMEyesim.llm.api.config import CLOUD_MODEL_CONFIGS
+from LLMEyesim.llm.llm.base import BaseLLM
+from LLMEyesim.llm.llm.config import CLOUD_MODEL_CONFIGS
 from LLMEyesim.llm.response.models import ActionQueue
 from LLMEyesim.utils.constants import OPENAI_API_KEY
 
@@ -50,7 +50,7 @@ class CloudLLM(BaseLLM):
                 max_retries=self.model.get("max_retries", 2),
             )
 
-            logger.info(f"Successfully initialized OpenAI client for model {self.name}")
+            logger.success(f"Successfully initialized OpenAI client for model {self.name}")
             return client
 
         except Exception as e:
@@ -100,6 +100,7 @@ class CloudLLM(BaseLLM):
             Dict containing the model response and metadata
         """
         logger.info(f"Processing with configurations: {self.model}")
+        logger.info(f"Messages: {messages}")
         try:
             response = self.client.beta.chat.completions.parse(
                 model=self.model["model"],

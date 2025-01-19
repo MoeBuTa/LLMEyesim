@@ -16,12 +16,15 @@ pip install -e .
 ```
 - Execute the demo
 ```bash
-llmeyesim --world demo --model gpt-4o-mini --attack none --defence false --attack_rate 0.5
+llmeyesim
 ```
 
-- Parameters 
-  - `world`: `demo`, `free`, `static`, `dynamic`, `mixed`
-  - `model`: `gpt-4o`, `gpt-4o-mini`
-  - `attack`: `none`, `omi`, `ghi`
-  - `defense`: `false`, `true`
-  - `attack rate`: `0.1`, `0.3`, `0.5`, `0.7`, `1`
+- Parameters for V1
+  - `--world`: `demo`, `free`, `static`, `dynamic`, `mixed`
+  - `--model`: `gpt-4o`, `gpt-4o-mini`
+  - `--attack`: `none`, `omi`, `ghi`
+  - `--defense`: `false`, `true`
+  - `--attack rate`: `0.1`, `0.3`, `0.5`, `0.7`, `1`
+
+- Parameters for V2
+  - TBD

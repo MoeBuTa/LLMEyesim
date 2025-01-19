@@ -4,21 +4,13 @@ class PromptV2:
 
     @staticmethod
     def create_system_prompt(role_description: str="", environment_description: str="", mission_description: str="", capabilities_description: str="", response_description: str="") -> str:
-        role = role_description if role_description else """
-        You are an executive agent in a mobile robotic system.
-        """
+        role = role_description if role_description else """You are an executive agent in a mobile robotic system. """
 
-        environment = environment_description if environment_description else """
-        a simulated indoor environment.
-        """
+        environment = environment_description if environment_description else """a simulated indoor environment."""
 
-        mission = mission_description if mission_description else """
-        Your mission is to navigate the robot to the red can.
-        """
+        mission = mission_description if mission_description else """navigate the robot to all targets in the environment."""
 
-        capabilities = capabilities_description if capabilities_description else """
-        You can move the robot in any of the eight directions by a distance of 100, 200, or 300 units per step. The directions are defined as follows: north (0°), northeast (45°), east (90°), southeast (135°), south (180°), southwest (225°), west (270°), and northwest (315°).
-        """
+        capabilities = capabilities_description if capabilities_description else """You can move the robot in any of the eight directions by a distance of 100, 200, or 300 units per step. The directions are defined as follows: north (0°), northeast (45°), east (90°), southeast (135°), south (180°), southwest (225°), west (270°), and northwest (315°)."""
 
         response = response_description if response_description else ""
         return f"""
@@ -26,7 +18,7 @@ class PromptV2:
 The robot is in {environment}.
 Your mission is to {mission}.
 Your robot has the following capabilities: {capabilities}.
-You will receive the exploration records of the current environment, the robot's current position, and the action queue planned for the robot. 
+You will receive the exploration records collected by the robot, the robot's current position, and the action queue planned for the robot. 
 Based on this information, generate a full action queue by updating the current action queue to avoid obstacles, optimize its performance, and ensure the mission is successfully completed. 
 Present your decisions along with justifications for each action.
 {response}"""

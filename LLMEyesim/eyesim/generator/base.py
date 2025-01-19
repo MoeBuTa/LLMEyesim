@@ -73,12 +73,14 @@ class WorldGenerator:
         self.object_settings += f"{object_name} {x} {y} {angle}\n"
 
     def write_robot_script(self) -> None:
+        self.items = self.robots + self.objects
         logger.debug("Creating robot script content")
         try:
             for i, robot in enumerate(self.robots):
                 content = f"""#!/Users/wenxiao/miniconda3/envs/llmeyesim/bin/python
 
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
+from LLMEyesim.eyesim.generator.models import WorldItem
 from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
 from LLMEyesim.integration.embodied_agent import EmbodiedAgent
 
@@ -100,7 +102,6 @@ if __name__ == '__main__':
             raise
 
     def generate_sim_file(self):
-        self.items = self.robots + self.objects
         logger.debug("Creating simulation file content")
         try:
             content = f"""

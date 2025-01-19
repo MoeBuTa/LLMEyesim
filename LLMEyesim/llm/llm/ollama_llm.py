@@ -4,8 +4,8 @@ from loguru import logger
 import requests
 from requests.adapters import HTTPAdapter, Retry
 
-from LLMEyesim.llm.api.base import BaseLLM
-from LLMEyesim.llm.api.config import OLLAMA_MODEL_CONFIGS
+from LLMEyesim.llm.llm.base import BaseLLM
+from LLMEyesim.llm.llm.config import OLLAMA_MODEL_CONFIGS
 
 
 class OllamaLLM(BaseLLM):

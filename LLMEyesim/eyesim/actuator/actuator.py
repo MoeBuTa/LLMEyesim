@@ -19,6 +19,7 @@ class RobotActuator:
         self.robot_id: int = robot_id
         self.robot_name: str = robot_name
         self.position = Position(0, 0, 0)
+
         self.img = None
         self.scan = None
         self.step: int = 0
@@ -32,6 +33,7 @@ class RobotActuator:
         CAMInit(QVGA)
         self.update_sensors()
         self.update_position()
+        logger.success(f"Successfully initialized hardware {self.robot_name}-{self.robot_id}")
 
 
     def update_sensors(self) -> Tuple[List[int], np.ndarray]:

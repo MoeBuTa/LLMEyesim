@@ -35,12 +35,13 @@ class ObstacleRegion:
     angular_width: int
 
     def __str__(self) -> str:
-        return f"Obstacle Region from {self.start_angle} to {self.end_angle} with minimum distance {self.min_distance}\n"
+        return f"Obstacle Region from degree {self.start_angle} to degree {self.end_angle} with minimum distance {self.min_distance}\n"
 
 @dataclass(frozen=True)
 class ObjectPosition:
     item_id: int
     item_name: str
+    item_type: str
     distance: int
     angle: int
     lidar_distance: int
@@ -49,4 +50,4 @@ class ObjectPosition:
     y: int
 
     def __str__(self) -> str:
-        return f"Found {self.item_name} at ({self.x}, {self.y})\n"
+        return f"Found a {self.item_type}: {self.item_name}, object id: {self.item_id} at ({self.x}, {self.y})\n"

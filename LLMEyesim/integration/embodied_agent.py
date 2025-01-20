@@ -4,14 +4,12 @@ from loguru import logger
 
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
 from LLMEyesim.eyesim.actuator.config import GRID_DIRECTION
-from LLMEyesim.eyesim.actuator.models import Position
 from LLMEyesim.eyesim.generator.models import WorldItem
 from LLMEyesim.eyesim.utils.lidar_detection import (
     calculate_object_positions,
-    detect_obstacles,
     update_object_positions,
 )
-from LLMEyesim.eyesim.utils.models import ObjectPosition, ObstacleRegion
+from LLMEyesim.eyesim.utils.models import ObjectPosition
 from LLMEyesim.integration.config import MAXIMUM_STEP
 from LLMEyesim.integration.models import (
     ExplorationRecord,
@@ -41,9 +39,6 @@ class EmbodiedAgent:
 
         # accumulated object positions records
         self.object_detected: List[ObjectPosition] = []
-
-        # obstacle regions by step
-        self.obstacle_region_detected: List[ObstacleRegion] = []
 
         # exploration records by step
         self.exploration_records: ExplorationRecordList = ExplorationRecordList(records=[])
@@ -80,13 +75,8 @@ class EmbodiedAgent:
         self.object_detected = update_object_positions(new_object_detected, self.object_detected)
         logger.info(f"Detected objects: {self.object_detected}")
 
-        # Obstacle region detection
-        self.obstacle_region_detected = detect_obstacles(lidar_data=scan)
-        logger.info(f"Detected obstacles: {self.obstacle_region_detected}")
-
         # Exploration record
         new_exploration_record = ExplorationRecord(object_positions=self.object_detected,
-                                                   obstacle_regions=self.obstacle_region_detected,
                                                    reached_targets=self.reached_targets, step=self.step)
         self._update_records(new_exploration_record=new_exploration_record)
 

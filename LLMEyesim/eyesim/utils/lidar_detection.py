@@ -2,65 +2,7 @@ from typing import List, Tuple
 
 from LLMEyesim.eyesim.generator.models import WorldItem
 from LLMEyesim.eyesim.utils.config import DISTANCE_THRESHOLD
-from LLMEyesim.eyesim.utils.models import ObjectPosition, ObstacleRegion
-
-
-def detect_obstacles(
-        lidar_data: List[int],
-        distance_threshold: int = 1000,  # Default threshold
-        min_width: int = 3
-) -> List[ObstacleRegion]:
-    """
-    Detect continuous obstacle regions from lidar data.
-    Args:
-        lidar_data: 360-degree lidar readings (integer values)
-        distance_threshold: Maximum distance to consider as obstacle
-        min_width: Minimum width in degrees to consider as valid obstacle
-    Returns:
-        List of obstacle regions with start angle, end angle, minimum distance, and directions
-    """
-    obstacles: List[ObstacleRegion] = []
-    start_idx: int | None = None
-
-    # Convert to list for processing
-    valid_max = 100000  # Some large integer value as max
-    lidar_list = [valid_max if x is None else x for x in lidar_data]
-
-    # Detect continuous regions
-    for i in range(len(lidar_list) + 1):
-        idx = i % 360
-        if i < 360 and lidar_list[idx] < distance_threshold:
-            if start_idx is None:
-                start_idx = idx
-        elif start_idx is not None:
-            # End of obstacle region found
-            end_idx = (i - 1) % 360
-
-            # Calculate region width considering wrap-around
-            width = (end_idx - start_idx) % 360
-
-            if width >= min_width:
-                # Get minimum distance in region
-                if start_idx <= end_idx:
-                    region_data = lidar_list[start_idx:end_idx + 1]
-                else:
-                    # Handle wrap-around case
-                    region_data = lidar_list[start_idx:] + lidar_list[:end_idx + 1]
-
-                # Get minimum distance (excluding invalid readings)
-                valid_readings = [x for x in region_data if x < distance_threshold]
-                min_distance = min(valid_readings) if valid_readings else distance_threshold
-
-                obstacles.append(ObstacleRegion(
-                    start_angle=start_idx,
-                    end_angle=end_idx,
-                    min_distance=min_distance,
-                    angular_width=width
-                ))
-            start_idx = None
-
-    return obstacles
-
+from LLMEyesim.eyesim.utils.models import ObjectPosition
 
 def calculate_object_positions(
         robot_pos: Tuple[int, int],

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import List, Tuple, Optional, Dict
+from typing import List, Optional, Dict
 
 from LLMEyesim.eyesim.actuator.models import Position
-from LLMEyesim.eyesim.utils.models import ObjectPosition, ObstacleRegion
+from LLMEyesim.eyesim.utils.models import ObjectPosition
 
 
 @dataclass(frozen=True)
@@ -114,7 +114,6 @@ class RobotStateRecord:
 class ExplorationRecord:
     """Record of the exploration state at a particular step"""
     object_positions: List[ObjectPosition]
-    obstacle_regions: List[ObstacleRegion]
     reached_targets: List[int]
     step: int
 
@@ -125,10 +124,6 @@ class ExplorationRecord:
         # Add objects
         if self.object_positions:
             parts.extend([str(pos) for pos in self.object_positions])
-
-        # Add obstacles
-        if self.obstacle_regions:
-            parts.extend([str(region) for region in self.obstacle_regions])
 
         # Add targets
         if self.reached_targets:
@@ -159,16 +154,6 @@ class ExplorationRecord:
                     descriptions.extend([f"- {obj.describe()}" for obj in objects])
         else:
             descriptions.append("No objects detected in this step.")
-
-        # Describe obstacles
-        if self.obstacle_regions:
-            if len(self.obstacle_regions) == 1:
-                descriptions.append(self.obstacle_regions[0].describe())
-            else:
-                descriptions.append(f"Detected {len(self.obstacle_regions)} obstacles:")
-                descriptions.extend([f"- {obs.describe()}" for obs in self.obstacle_regions])
-        else:
-            descriptions.append("No obstacles detected in range.")
 
         # Describe reached targets
         if self.reached_targets:
@@ -202,14 +187,6 @@ class ExplorationRecord:
             if obj.get_direction() == direction
         ]
 
-    def get_obstacles_in_direction(self, direction: str) -> List[ObstacleRegion]:
-        """Get all obstacles in a specific direction"""
-        return [
-            obs for obs in self.obstacle_regions
-            if direction in obs.get_directions()
-        ]
-
-
 @dataclass(frozen=True)
 class ExplorationRecordList:
     """List of exploration records with analysis capabilities"""
@@ -223,8 +200,7 @@ class ExplorationRecordList:
         latest = self.records[-1]
         parts = [
             "Current Exploration Status:",
-            *[str(pos) for pos in latest.object_positions],
-            *[str(region) for region in latest.obstacle_regions]
+            *[str(pos) for pos in latest.object_positions]
         ]
 
         if latest.reached_targets:
@@ -290,18 +266,6 @@ class ExplorationRecordList:
             changes.append("Objects no longer visible:")
             changes.extend([f"- {obj.describe()}" for obj in lost_objects])
 
-        # Analyze obstacle changes
-        new_obstacles = set(record2.obstacle_regions) - set(record1.obstacle_regions)
-        cleared_obstacles = set(record1.obstacle_regions) - set(record2.obstacle_regions)
-
-        if new_obstacles:
-            changes.append("New obstacles detected:")
-            changes.extend([f"- {obs.describe()}" for obs in new_obstacles])
-
-        if cleared_obstacles:
-            changes.append("Obstacles no longer present:")
-            changes.extend([f"- {obs.describe()}" for obs in cleared_obstacles])
-
         # Analyze target changes
         new_targets = set(record2.reached_targets) - set(record1.reached_targets)
         if new_targets:
@@ -326,18 +290,12 @@ class ExplorationRecordList:
             for obj in record.object_positions
         })
 
-        total_obstacles_encountered = len({
-            (obs.start_angle, obs.end_angle, obs.min_distance)
-            for record in self.records
-            for obs in record.obstacle_regions
-        })
 
         summary = [
             f"Exploration Summary ({len(self.records)} steps):",
             f"- Started at step {first_record.step}",
             f"- Current step: {latest_record.step}",
             f"- Total unique objects found: {total_objects_found}",
-            f"- Total obstacles encountered: {total_obstacles_encountered}",
             f"- Total targets reached: {len(latest_record.reached_targets)}",
         ]
 
@@ -361,6 +319,5 @@ Exploration Summary (2 steps):
 - Started at step 0
 - Current step: 1
 - Total unique objects found: 2
-- Total obstacles encountered: 2
 - Total targets reached: 1
 """

@@ -10,7 +10,7 @@ class PromptV2:
 
         mission = mission_description if mission_description else """navigate the robot to all targets in the environment."""
 
-        capabilities = capabilities_description if capabilities_description else """You can move the robot in any of the eight directions by a distance of 100, 200, or 300 units per step. The directions are defined as follows: north (0°), northeast (45°), east (90°), southeast (135°), south (180°), southwest (225°), west (270°), and northwest (315°)."""
+        capabilities = capabilities_description if capabilities_description else """You can move the robot in any of the four directions by a distance of 100, 200, or 300 units per step. The directions are defined as follows: north (0°), northeast (45°), east (90°)."""
 
         response = response_description if response_description else ""
         return f"""
@@ -18,8 +18,11 @@ class PromptV2:
 The robot is in {environment}.
 Your mission is to {mission}.
 Your robot has the following capabilities: {capabilities}.
-You will receive the exploration records collected by the robot, the robot's current position in x,y, where x represents west (smaller) and east (larger), and y represents south (smaller) and north (larger), and the action queue planned for the robot. 
-Based on this information, generate a full action queue by updating the current action queue to avoid obstacles, keep the robot at least 200 units away from obstacles, optimize its performance, and ensure the mission is successfully completed. 
+You will receive:
+1. the exploration records collected by the robot including a list of objects and targets found, a LiDAR scan capturing 360-degree distance measurements around a point, starting from 0 degrees and moving clockwise. Each number represents the distance to the nearest obstacle at that angle.
+2. the robot's current position in x,y, where x represents west (smaller) and east (larger), and y represents south (smaller) and north (larger). 
+3. the action queue planned for the robot. 
+Based on this information, generate a full action queue by updating the current action queue to avoid obstacles, keep the robot at least 200 units away from obstacles, and ensure the mission is successfully completed. 
 Present your decisions along with justifications for each action.
 {response}"""
 

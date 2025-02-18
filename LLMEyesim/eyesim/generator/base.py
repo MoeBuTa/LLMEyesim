@@ -4,7 +4,7 @@ from typing import List, Literal
 
 from loguru import logger
 
-from LLMEyesim.eyesim.generator.config import (
+from LLMEyesim.eyesim.generator.legacy.config import (
     AVAILABLE_OBJECTS,
     AVAILABLE_ROBOTS,
     RANDOM_CAN_LOCATIONS,
@@ -21,6 +21,7 @@ class WorldGenerator:
         logger.info(f"Initializing WorldGenerator with world name: {world_name}")
         self.sim_file = f"{EYESIM_DIR}/default.sim"
         self.world_file = f"{WORLD_DIR}/{world_name}.wld"
+        self.obstacle_file = f"{WORLD_DIR}/Crate/Boxes.esObj"
 
         self.llm_name = llm_name
 
@@ -109,6 +110,8 @@ if __name__ == '__main__':
 world {self.world_file}
 
 settings VIS TRACE
+
+object {self.obstacle_file}
 
 # Robots
 {self.robot_settings}

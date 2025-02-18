@@ -77,7 +77,8 @@ class EmbodiedAgent:
 
         # Exploration record
         new_exploration_record = ExplorationRecord(object_positions=self.object_detected,
-                                                   reached_targets=self.reached_targets, step=self.step)
+                                                   reached_targets=self.reached_targets,
+                                                   scan_data=scan, step=self.step)
         self._update_records(new_exploration_record=new_exploration_record)
 
     def _process_agent(self):

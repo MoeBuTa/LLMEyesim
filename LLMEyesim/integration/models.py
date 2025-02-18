@@ -115,6 +115,7 @@ class ExplorationRecord:
     """Record of the exploration state at a particular step"""
     object_positions: List[ObjectPosition]
     reached_targets: List[int]
+    scan_data: List[int]
     step: int
 
     def __str__(self) -> str:
@@ -165,6 +166,10 @@ class ExplorationRecord:
                 f"Successfully reached target{'' if len(self.reached_targets) == 1 else 's'} {targets_str}."
             )
 
+        # Describe LiDAR scan data
+        if self.scan_data:
+            descriptions.append(f"LiDAR scan data: {self.scan_data}")
+
         return "\n".join(descriptions)
 
     def get_objects_by_type(self, item_type: str) -> List[ObjectPosition]:
@@ -207,6 +212,9 @@ class ExplorationRecordList:
             parts.append(
                 f"Reached targets: {[f'target id: {target}' for target in latest.reached_targets]}"
             )
+
+        if latest.scan_data:
+            parts.append(f"LiDAR scan data: {[i for i in latest.scan_data]}")
 
         return "\n".join(parts)
 

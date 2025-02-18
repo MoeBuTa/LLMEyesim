@@ -1,0 +1,21 @@
+# EyeSim Object File
+
+# Path to .obj file
+obj Crate1.obj
+
+# Object name
+name Crate1
+0
+# Scale
+scale 1
+
+# Mass properties: mass of object, followed by centre of mass
+# mass kg x y z
+mass 1 0 0 0
+
+# collider box <Vector3 centre> <Vector3 size>
+# collider capsule <Vector3 centre> <radius> <height> <x|y|z>
+# collider sphere <Vector3 centre> <radius>
+collider box 0 100 0 360 200 360
+
+fixed

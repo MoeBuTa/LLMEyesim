@@ -7,6 +7,7 @@ from loguru import logger
 
 from LLMEyesim.eyesim.actuator.actuator import Action, RobotActuator
 from LLMEyesim.eyesim.utils.image_process import ImageProcess
+from LLMEyesim.eyesim.utils.target_detection import red_detector
 from LLMEyesim.eyesim.utils.task_manager import TaskManager
 from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
 from LLMEyesim.simulation.models import SimulatorConfig
@@ -78,7 +79,7 @@ class Simulator:
 
             self.actuator.update_sensors()
 
-            _, _, max_value = self.actuator.red_detector(self.actuator.img)
+            _, _, max_value = red_detector(self.actuator.img)
 
             self._record_action(act, max_value)
 
@@ -160,7 +161,7 @@ class Simulator:
 
             for i in range(1, self.config.max_steps + 1):
                 for i, item in enumerate(self.world_items):
-                    logger.info(f"Processing item {i+1} {item.item_name} {item.item_type}")
+                    logger.info(f"Processing item {i + 1} {item.item_name} {item.item_type}")
                     pos = [item.x, item.y, item.angle]
                     if item.item_type == "robot":
                         pos = SIMGetRobot(i + 1)
@@ -176,7 +177,6 @@ class Simulator:
         except Exception as e:
             logger.error(f"Simulator run failed: {str(e)}")
             return "failed"
-
 
     def _process_iteration(self, i: int, interval: int, iterations_per_rate: int) -> bool:
         """Process a single iteration of the simulator"""
@@ -323,18 +323,17 @@ class Simulator:
             "last_command": self.actuator.format_last_command(),
         }
 
-
     def _get_llm_response_record(
-        self,
-        step: int,
-        perception: str,
-        planning: str,
-        control: List[Dict],
-        attack_injected: bool,
-        completion_tokens: int,
-        prompt_tokens: int,
-        total_tokens: int,
-        response_time: float
+            self,
+            step: int,
+            perception: str,
+            planning: str,
+            control: List[Dict],
+            attack_injected: bool,
+            completion_tokens: int,
+            prompt_tokens: int,
+            total_tokens: int,
+            response_time: float
 
     ):
         return {

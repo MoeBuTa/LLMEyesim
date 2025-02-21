@@ -21,8 +21,6 @@ class RobotAction:
     """Record of the robot's action"""
     direction: str
     distance: int
-    execution_status: bool = False  # False for not executed, True for executed
-    detail: Optional[str] = None  # Additional detail about execution/non-execution
 
     def __str__(self) -> str:
         return f"Move {self.direction} by {self.distance}"
@@ -34,15 +32,7 @@ class RobotAction:
     def get_execution_description(self) -> str:
         """Generate a natural language description based on execution status"""
         action_desc = f"{self.distance} units {self.direction}"
-        if self.execution_status:
-            base_desc = f"has moved {action_desc}"
-        else:
-            base_desc = f"will move {action_desc}"
-
-        # Add detail if available
-        if self.detail:
-            return f"{base_desc} ({self.detail})"
-        return base_desc
+        return action_desc
 
 
 @dataclass(frozen=True)
@@ -80,14 +70,6 @@ class RobotStateRecord:
                 f"The robot is at {current_pos.describe()} (Step {current_step})."
             )
 
-        # Describe pending actions
-        if self.action_queue:
-            description.append("\nPending Actions:")
-            for i, action in enumerate(self.action_queue, start=1):
-                next_step = len(self.executed_actions) + i
-                description.append(f"Step {next_step}: Robot {action.get_execution_description()}")
-        else:
-            description.append("\nNo pending actions in the queue.")
 
         return "\n".join(description)
 

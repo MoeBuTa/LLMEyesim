@@ -1,3 +1,4 @@
+import math
 from typing import List, Union
 
 from loguru import logger
@@ -7,9 +8,10 @@ from LLMEyesim.eyesim.actuator.config import GRID_DIRECTION
 from LLMEyesim.eyesim.generator.models import WorldItem
 from LLMEyesim.eyesim.utils.lidar_detection import (
     calculate_object_positions,
-    update_object_positions,
+    update_object_positions, is_movement_safe, calculate_distance,
 )
 from LLMEyesim.eyesim.utils.models import ObjectPosition
+from LLMEyesim.eyesim.utils.target_detection import detect_red_target
 from LLMEyesim.integration.config import MAXIMUM_STEP
 from LLMEyesim.integration.models import (
     ExplorationRecord,
@@ -21,6 +23,8 @@ from LLMEyesim.integration.models import (
 from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
 from LLMEyesim.utils.constants import LOG_DIR
 from datetime import datetime
+
+from eye import *
 
 current_time = datetime.now()
 formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -46,12 +50,9 @@ class EmbodiedAgent:
 
         # search and rescue mission
         self.reached_targets = []
+        self.identified_targets = []
         self.target_list = [item for item in world_items if item.item_type == "target"]
         self.target_remaining = len(self.target_list)
-
-        # Safety Validation
-        self.safety_flag = True
-        self.reason = ""
 
         logger.success(
             f"Embodied agent initialized with {self.agent.llm_name}-{self.actuator.robot_name}-{self.actuator.robot_id}-{self.target_list}")
@@ -64,7 +65,7 @@ class EmbodiedAgent:
             logger.info(f"Updating exploration record at step {self.step}")
             self.exploration_records.records.append(kwargs["new_exploration_record"])
 
-    def _process_sensors(self, scan: List[int]):
+    def _process_sensors(self, scan: List[int], image: Union[None, str] = None):
         # process sensors and get environment information
         logger.info(f"Processing sensors at step {self.step}")
 
@@ -95,68 +96,6 @@ class EmbodiedAgent:
                                response=response.get('response'), usage=response.get('usage'), step=self.step)
         self._update_records(new_llm_record=llm_record)
 
-    @staticmethod
-    def _is_movement_safe(
-            lidar_data: List[int],
-            direction: str,
-            distance: int,
-            angle_threshold: int = 15,  # Check ±15 degrees from movement direction
-            safety_margin: int = 100  # Additional safety buffer (units)
-    ) -> tuple[bool, str]:
-        """
-        Check if moving in a specific direction for a given distance is safe.
-
-        Args:
-            lidar_data: 360-degree lidar readings (integer values)
-            direction: Direction of movement ('north', 'east', etc.)
-            distance: Intended movement distance
-            angle_threshold: Degrees to check on either side of movement direction
-            safety_margin: Additional safety buffer distance
-
-        Returns:
-            tuple[bool, str]: (is_safe, reason)
-            - is_safe: True if movement is safe, False otherwise
-            - reason: Description of why movement is unsafe (if applicable)
-        """
-        if direction not in GRID_DIRECTION:
-            return False, f"Invalid direction: {direction}"
-
-        # Get center angle for the direction
-        center_angle = GRID_DIRECTION[direction]
-
-        # Calculate the range of angles to check
-        start_angle = abs(center_angle - angle_threshold) % 360
-        end_angle = (center_angle + angle_threshold) % 360
-
-        # Get the minimum distance reading in the movement path
-        if start_angle <= end_angle:
-            scan_range = range(start_angle, end_angle + 1)
-        else:
-            # Handle wrap-around case (e.g., checking around 0/360 degrees)
-            scan_range = list(range(start_angle, 360)) + list(range(0, end_angle + 1))
-
-        # Check each angle in the range
-        min_distance = float('inf')
-        min_distance_angle = None
-
-        for angle in scan_range:
-            if lidar_data[angle] < min_distance:
-                min_distance = lidar_data[angle]
-                min_distance_angle = angle
-
-        # Check if the path is clear
-        safe_distance = distance + safety_margin
-        logger.info(f"Checking movement safety: min_distance={min_distance}, safe_distance={safe_distance}, scan_range={scan_range}, direction={direction}")
-        if min_distance <= safe_distance:
-            return False, (
-                f"Obstacle detected at angle {min_distance_angle}° "
-                f"at distance {min_distance} units."
-                f"Movement requires {safe_distance} units clearance "
-                f"(requested distance {distance} + safety margin {safety_margin})"
-            )
-
-        return True, "Path is clear"
-
     def _check_search_mission_status(self) -> bool:
         """
         Check if the mission is complete.
@@ -168,11 +107,91 @@ class EmbodiedAgent:
         for target in self.target_list:
             # consider target as reached if it is detected and within 100mm distance
             for obj in self.object_detected:
-                if obj.item_id == target.item_id and self.actuator.calculate_distance(pos.x, pos.y, obj.x,
-                                                                                      obj.y) < 100:
+                if obj.item_id == target.item_id and calculate_distance(pos.x, pos.y, obj.x,
+                                                                        obj.y) < 100:
                     self.target_remaining -= 1
                     self.reached_targets.append(target.item_id)
         return False
+
+    def move_grid(self, distance: int, direction: str) -> None:
+        """
+        Move the robot in a grid pattern in the specified direction with position checking.
+        First turns to target direction, then moves straight while checking position.
+
+        Args:
+            distance (int): Distance to move in millimeters
+            direction (str): Target direction to move ('N', 'S', 'E', 'W', etc.)
+        Raises:
+            ValueError: If direction is not one of the valid GRID_DIRECTION values
+        """
+        if direction not in GRID_DIRECTION:
+            raise ValueError(f"Invalid direction: {direction}")
+
+        logger.info(f"{self.actuator.robot_name} {self.actuator.robot_id}: Moving {direction}")
+        x, y, phi = self.actuator.position
+        target_degree = GRID_DIRECTION[direction]
+        self.grid_turn(phi, target_degree)
+        logger.info(f"{self.actuator.robot_name} {self.actuator.robot_id}: Moving {distance} mm")
+        target_radian = math.radians(phi)
+        target_x = x + int(distance * math.cos(target_radian))
+        target_y = y + int(distance * math.sin(target_radian))
+        self.grid_straight(target_x, target_y, direction)
+
+    def grid_turn(
+            self,
+            phi: int,
+            target_degree: int,
+            angle_deviation: int = 5
+    ) -> None:
+        """
+        Calculate and execute the shortest turn between two angles.
+        if found target
+
+        Args:
+            phi (int): The starting angle in degrees
+            target_degree (int): The target angle in degrees
+            angle_deviation (int, optional): Acceptable angle deviation in degrees. Defaults to 5.
+        Returns:
+            None
+        """
+        diff = ((target_degree - phi) % 360)
+        degree_to_turn = diff if diff <= 180 else abs(diff - 360)
+        while degree_to_turn > 0:
+            VWTurn(5, 100)
+            VWWait()
+            scan, img = self.actuator.update_sensors()
+            x, y, phi = self.actuator.update_position()
+            diff = ((target_degree - phi) % 360)
+            degree_to_turn = diff if diff <= 180 else diff - 360
+
+            target_id = detect_red_target(img=img, robot_pos=(x, y, phi), target_list=self.target_list)
+            if target_id not in self.identified_targets:
+                self.identified_targets.append(target_id)
+
+    def grid_straight(self, target_x: int, target_y: int, direction: str, pos_deviation: int = 10):
+        """
+        Move the robot straight in a grid pattern.
+
+        Args:
+            target_x (int): Target x coordinate in mm
+            target_y (int): Target y coordinate in mm
+            direction (str): Target direction to move ('N', 'S', 'E', 'W', etc.)
+            pos_deviation (int, optional): Acceptable position deviation in mm. Defaults to 10.
+        Returns:
+            None
+        """
+        distance = calculate_distance(self.actuator.position.x, self.actuator.position.y, target_x, target_y)
+        scan, img = self.actuator.update_sensors()
+        while distance >= pos_deviation and is_movement_safe(scan):
+            VWStraight(10, 100)
+            VWWait()
+            scan, img = self.actuator.update_sensors()
+            x, y, phi = self.actuator.update_position()
+            distance = calculate_distance(x, y, target_x, target_y)
+            target_id = detect_red_target(img=img, robot_pos=(x, y, phi), target_list=self.target_list)
+            if target_id not in self.identified_targets:
+                self.identified_targets.append(target_id)
+
 
     def run_agent(self):
         """
@@ -185,7 +204,7 @@ class EmbodiedAgent:
             # get latest status and update records
             self.robot_state_record.positions.append(self.actuator.position)
             img, scan = self.actuator.img, self.actuator.scan
-            self._process_sensors(scan=scan)
+            self._process_sensors(scan=scan, image=img)
 
             # update and check search mission status
             if self._check_search_mission_status():
@@ -197,14 +216,11 @@ class EmbodiedAgent:
 
             # if action queue is empty, run process agent
             # TODO: needs more conditions to trigger process agent
-            if not self.robot_state_record.action_queue or not self.safety_flag:
+            if not self.robot_state_record.action_queue:
                 self._process_agent()
 
             # move robot by popping next action in queue
             next_action = self.robot_state_record.action_queue.pop(0)
             logger.info(f"Next action: {next_action}")
-            self.safety_flag, detail = self._is_movement_safe(scan, next_action.direction, next_action.distance)
-            next_action = RobotAction(direction=next_action.direction, distance=next_action.distance,
-                                      execution_status=self.safety_flag, detail=detail)
-            if self.safety_flag:
-                self.actuator.move_grid(next_action.distance, next_action.direction)
+            next_action = RobotAction(direction=next_action.direction, distance=next_action.distance)
+            self.move_grid(next_action.distance, next_action.direction)

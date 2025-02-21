@@ -1,8 +1,10 @@
+import math
 from typing import List, Tuple
 
+from LLMEyesim.eyesim.actuator.config import GRID_DIRECTION
 from LLMEyesim.eyesim.generator.models import WorldItem
-from LLMEyesim.eyesim.utils.config import DISTANCE_THRESHOLD
 from LLMEyesim.eyesim.utils.models import ObjectPosition
+from loguru import logger
 
 def calculate_object_positions(
         robot_pos: Tuple[int, int],
@@ -119,3 +121,78 @@ def update_object_positions(
             # New object - add to list
             detected_objects.append(new_obj)
     return detected_objects
+
+
+def calculate_distance(x1: int, y1: int, x2: int, y2: int) -> int:
+    """
+    Calculate the distance between two points.
+
+    Args:
+        x1 (int): x coordinate of the first point
+        y1 (int): y coordinate of the first point
+        x2 (int): x coordinate of the second point
+        y2 (int): y coordinate of the second point
+    Returns:
+        float: The distance between the two points
+    """
+    return int(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
+
+
+def is_movement_safe(
+        lidar_data: List[int],
+        angle_threshold: int = 20,  # Check ±30 degrees from movement direction
+        safety_margin: int = 200  # Additional safety buffer (units)
+) -> bool:
+    """
+    Check if moving in a specific direction for a given distance is safe.
+
+    Args:
+        lidar_data: 360-degree lidar readings (integer values)
+        angle_threshold: Degrees to check on either side of movement direction
+        safety_margin: Additional safety buffer distance
+
+    Returns:
+        bool: - is_safe: True if movement is safe, False otherwise
+
+    LIDAR: 0 ~ 359
+    180 is the front of the robot
+    0 is the back of the robot
+    """
+
+    # Get center angle for the direction
+    center_angle = 180
+
+    # Calculate the range of angles to check
+    start_angle = (center_angle - angle_threshold) % 360
+    end_angle = (center_angle + angle_threshold) % 360
+
+    # Get the minimum distance reading in the movement path
+    if start_angle <= end_angle:
+        scan_range = range(start_angle, end_angle + 1)
+    else:
+        # Handle wrap-around case (e.g., checking around 0/360 degrees)
+        scan_range = list(range(start_angle, 360)) + list(range(0, end_angle + 1))
+
+    # Check each angle in the range
+    min_distance = float('inf')
+    min_distance_angle = None
+
+    # Log distances for each angle being checked
+    for angle in scan_range:
+        distance = lidar_data[angle]
+        if distance < min_distance:
+            min_distance = distance
+            min_distance_angle = angle
+
+    logger.info(
+        f"Movement safety check: min_distance={min_distance}, at angle={min_distance_angle}, safe_distance={safety_margin}"
+    )
+
+    # Check if the path is clear
+    if min_distance <= safety_margin:
+        logger.warning(
+            f"Movement is unsafe! Min distance {min_distance} at angle {min_distance_angle}")
+        return False
+
+    logger.success(f"Movement is safe. Min distance {min_distance}")
+    return True

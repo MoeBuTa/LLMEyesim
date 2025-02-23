@@ -65,7 +65,6 @@ class CloudLLM(BaseLLM):
         if response_format is None:
             response_format = {"type": "json_object"}
         try:
-            logger.info(f"Processing with configurations: {self.model}")
             response = self.client.chat.completions.create(
                 model=self.model["model"],
                 messages=messages,
@@ -99,7 +98,6 @@ class CloudLLM(BaseLLM):
         Returns:
             Dict containing the model response and metadata
         """
-        logger.info(f"Processing with configurations: {self.model}")
         logger.info(f"Messages: {messages}")
         try:
             response = self.client.beta.chat.completions.parse(

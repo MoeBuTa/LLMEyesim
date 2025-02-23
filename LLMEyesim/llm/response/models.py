@@ -14,3 +14,14 @@ class ActionQueue(BaseModel):
 
 
     action_queue: List[RobotAction] = Field(..., description="List of actions to be executed")
+
+
+class WayPointList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    class WayPoint(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+        x: int = Field(..., description="The x-coordinate of the waypoint")
+        y: int = Field(..., description="The y-coordinate of the waypoint")
+        description: str = Field(..., description="Description of the waypoint")
+    waypoint_list: List[WayPoint] = Field(..., description="List of waypoints")

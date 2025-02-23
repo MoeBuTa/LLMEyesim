@@ -10,3 +10,6 @@ class WorldItem:
     x: int = 0
     y: int = 0
     angle: int = 0
+
+    def __str__(self) -> str:
+        return f"{self.item_type} {self.item_id}: {self.item_name} at ({self.x}, {self.y})"

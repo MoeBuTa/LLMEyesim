@@ -14,7 +14,7 @@ from LLMEyesim.utils.helper import float_in_list, set_task_name, str2bool
 DEFAULT_CONFIG = {
     "mode": "2",
     "world": "demo",
-    "model": "gpt-4o-mini",
+    "model": "gpt-4o",
     "attack": "none",
     "defence": False,
     "attack_rate": 0.5

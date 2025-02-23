@@ -1,5 +1,7 @@
 from typing import Dict, List
 
+from openai.types.chat import completion_create_params
+
 from LLMEyesim.llm.llm.manager import LLMManager
 from LLMEyesim.llm.prompt.prompt_v1 import PromptV1
 from LLMEyesim.llm.prompt.prompt_v2 import PromptV2
@@ -18,13 +20,13 @@ class ExecutiveAgent:
         messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}]
         return self.llm.process(messages=messages)
 
-    def process_v2(self, exploration_records: str, robot_state: str,
+    def process_v2(self, message: str, response_format: completion_create_params.ResponseFormat,
                    prompt_type: int = 0) -> Dict:
         """
         Process the executive agent with the given exploration records and robot state.
         """
         system_prompt = PromptV2.create_system_prompt()
-        user_prompt = PromptV2.create_user_prompt(exploration_records, robot_state)
+        user_prompt = PromptV2.create_user_prompt(message=message)
         messages = [{"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}]
         if prompt_type == '1':
@@ -34,4 +36,4 @@ class ExecutiveAgent:
                         {"role": "user", "content": example_user_prompt},
                         {"role": "assistant", "content": example_assistant_prompt},
                         {"role": "user", "content": user_prompt}]
-        return self.llm.process_v2(messages=messages)
+        return self.llm.process_v2(messages=messages, response_format=response_format)

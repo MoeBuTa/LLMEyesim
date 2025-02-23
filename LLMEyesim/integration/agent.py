@@ -1,6 +1,8 @@
 import math
-from typing import List, Union
+from dataclasses import dataclass
+from typing import List, Union, Tuple
 
+import numpy as np
 from loguru import logger
 
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
@@ -20,7 +22,7 @@ from LLMEyesim.integration.models import (
     RobotAction,
     RobotStateRecord,
 )
-from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
+from LLMEyesim.llm.agents.agent import ExecutiveAgent
 from LLMEyesim.utils.constants import LOG_DIR
 from datetime import datetime
 
@@ -65,22 +67,29 @@ class EmbodiedAgent:
             logger.info(f"Updating exploration record at step {self.step}")
             self.exploration_records.records.append(kwargs["new_exploration_record"])
 
-    def _process_sensors(self, scan: List[int], image: Union[None, str] = None):
+    def _process_sensors(self) -> Tuple[Union[List[int], None], Union[np.ndarray, None], int, int, int]:
         # process sensors and get environment information
-        logger.info(f"Processing sensors at step {self.step}")
+        scan, img = self.actuator.update_sensors()
+        x, y, phi = self.actuator.update_position()
 
-        # Object detection
+        # check if target is detected
+        target_id = detect_red_target(img=img, robot_pos=(x, y, phi), target_list=self.target_list)
+        if target_id not in self.identified_targets:
+            self.identified_targets.append(target_id)
+
+        # update object positions in memory
         current_position = self.robot_state_record.positions[-1]
-        new_object_detected = calculate_object_positions(robot_pos=(current_position.x, current_position.y),
-                                                         objects=self.world_items, lidar_data=scan)
+        new_object_detected = calculate_object_positions(
+            robot_pos=(current_position.x, current_position.y, current_position.phi),
+            objects=self.world_items, lidar_data=scan)
         self.object_detected = update_object_positions(new_object_detected, self.object_detected)
-        logger.info(f"Detected objects: {self.object_detected}")
 
-        # Exploration record
+        # exploration record
         new_exploration_record = ExplorationRecord(object_positions=self.object_detected,
                                                    reached_targets=self.reached_targets,
                                                    scan_data=scan, step=self.step)
         self._update_records(new_exploration_record=new_exploration_record)
+        return scan, img, x, y, phi
 
     def _process_agent(self):
         logger.info(f"Processing agent at step {self.step}")
@@ -135,7 +144,7 @@ class EmbodiedAgent:
         target_radian = math.radians(phi)
         target_x = x + int(distance * math.cos(target_radian))
         target_y = y + int(distance * math.sin(target_radian))
-        self.grid_straight(target_x, target_y, direction)
+        self.grid_straight(target_x, target_y)
 
     def grid_turn(
             self,
@@ -159,60 +168,40 @@ class EmbodiedAgent:
         while degree_to_turn > 0:
             VWTurn(5, 100)
             VWWait()
-            scan, img = self.actuator.update_sensors()
-            x, y, phi = self.actuator.update_position()
+            _, _, _, _, phi = self._process_sensors()
             diff = ((target_degree - phi) % 360)
             degree_to_turn = diff if diff <= 180 else diff - 360
 
-            target_id = detect_red_target(img=img, robot_pos=(x, y, phi), target_list=self.target_list)
-            if target_id not in self.identified_targets:
-                self.identified_targets.append(target_id)
-
-    def grid_straight(self, target_x: int, target_y: int, direction: str, pos_deviation: int = 10):
+    def grid_straight(self, target_x: int, target_y: int, pos_deviation: int = 10):
         """
         Move the robot straight in a grid pattern.
 
         Args:
             target_x (int): Target x coordinate in mm
             target_y (int): Target y coordinate in mm
-            direction (str): Target direction to move ('N', 'S', 'E', 'W', etc.)
             pos_deviation (int, optional): Acceptable position deviation in mm. Defaults to 10.
         Returns:
             None
         """
         distance = calculate_distance(self.actuator.position.x, self.actuator.position.y, target_x, target_y)
-        scan, img = self.actuator.update_sensors()
-        while distance >= pos_deviation and is_movement_safe(scan):
+        while distance >= pos_deviation and is_movement_safe(self.actuator.scan):
             VWStraight(10, 100)
             VWWait()
-            scan, img = self.actuator.update_sensors()
-            x, y, phi = self.actuator.update_position()
+            scan, img, x, y, phi = self._process_sensors()
             distance = calculate_distance(x, y, target_x, target_y)
-            target_id = detect_red_target(img=img, robot_pos=(x, y, phi), target_list=self.target_list)
-            if target_id not in self.identified_targets:
-                self.identified_targets.append(target_id)
-
 
     def run_agent(self):
         """
         Run the embodied agent with the given actuator.
         """
         # Search and rescue mission
+        self._process_sensors()
         while self.step < MAXIMUM_STEP and self.target_remaining > 0:
             self.step += 1
-
-            # get latest status and update records
-            self.robot_state_record.positions.append(self.actuator.position)
-            img, scan = self.actuator.img, self.actuator.scan
-            self._process_sensors(scan=scan, image=img)
-
             # update and check search mission status
             if self._check_search_mission_status():
                 logger.info(f"Mission completed at step {self.step}")
                 return
-
-            logger.info(
-                f"Running {self.actuator.robot_name}-{self.actuator.robot_id} at {str(self.actuator.position)} with step {self.step}")
 
             # if action queue is empty, run process agent
             # TODO: needs more conditions to trigger process agent
@@ -221,6 +210,5 @@ class EmbodiedAgent:
 
             # move robot by popping next action in queue
             next_action = self.robot_state_record.action_queue.pop(0)
-            logger.info(f"Next action: {next_action}")
             next_action = RobotAction(direction=next_action.direction, distance=next_action.distance)
             self.move_grid(next_action.distance, next_action.direction)

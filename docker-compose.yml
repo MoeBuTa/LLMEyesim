@@ -1,0 +1,28 @@
+services:
+  neo4j:
+    image: neo4j:5.20.0
+    container_name: eyesim_neo4j
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4JLABS_PLUGINS=["apoc", "n10s"]
+      - NEO4J_dbms_unmanaged__extension__classes=n10s.endpoint=/rdf
+      - NEO4J_dbms_security_procedures_whitelist=apoc.*, semantics.*
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*, semantics.*
+      - NEO4J_dbms_security_procedures_allowlist=apoc.*, semantics.*,n10s.*
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/import
+      - ./neo4j/plugins:/var/lib/neo4j/plugins
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_import:
+  neo4j_plugins:

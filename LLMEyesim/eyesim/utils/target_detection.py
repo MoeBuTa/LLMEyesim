@@ -108,7 +108,6 @@ def detect_red_target(img, robot_pos: Tuple[int, int, int],
                     break
 
         if matched_item:
-            logger.info(f"Matched with target #{matched_item.item_id} at position ({matched_item.x}, {matched_item.y})")
             return matched_item.item_id
 
         # If no exact item was found, return the first valid target ID (not 0)

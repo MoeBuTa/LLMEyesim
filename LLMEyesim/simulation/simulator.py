@@ -9,7 +9,7 @@ from LLMEyesim.eyesim.actuator.actuator import Action, RobotActuator
 from LLMEyesim.eyesim.utils.image_process import ImageProcess
 from LLMEyesim.eyesim.utils.target_detection import red_detector
 from LLMEyesim.eyesim.utils.task_manager import TaskManager
-from LLMEyesim.llm.agents.executive_agent import ExecutiveAgent
+from LLMEyesim.llm.agents.agent import ExecutiveAgent
 from LLMEyesim.simulation.models import SimulatorConfig
 from LLMEyesim.utils.constants import DATA_DIR
 

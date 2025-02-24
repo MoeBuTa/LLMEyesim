@@ -1,6 +1,6 @@
 TARGET_LOCATIONS = [
-            (3000, 5500),  # Top middle
-            (500, 3000),  # Left middle
-            (5500, 3000),  # Right middle
-            (3000, 500)  # Bottom middle
-        ]
+    (2000, 3667),  # Top middle
+    (333, 2000),   # Left middle
+    (3667, 2000),  # Right middle
+    (2000, 333)    # Bottom middle
+]

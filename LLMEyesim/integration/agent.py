@@ -9,6 +9,7 @@ from openai.types.chat import completion_create_params
 
 from LLMEyesim.eyesim.actuator.actuator import RobotActuator
 from LLMEyesim.eyesim.actuator.config import GRID_DIRECTION
+from LLMEyesim.eyesim.actuator.models import Position
 from LLMEyesim.eyesim.generator.models import WorldItem
 from LLMEyesim.eyesim.utils.lidar_detection import (
     calculate_object_positions,
@@ -50,7 +51,7 @@ class EmbodiedAgent:
         self.step = 0
 
         # exploration and targets search mission
-        self.history_positions: List[Tuple[int, int, int]] = []
+        self.history_positions: List[Position] = []
         self.reached_targets: List[int] = []
         self.identified_targets: List[int] = []
         self.target_list: List[WorldItem] = [item for item in world_items if item.item_type == "target"]
@@ -67,7 +68,7 @@ class EmbodiedAgent:
 
             # check if target is detected
             target_id = detect_red_target(img=img, robot_pos=(x, y, phi), target_list=self.target_list)
-            if target_id not in self.identified_targets:
+            if target_id not in self.identified_targets and target_id != -1:
                 self.identified_targets.append(target_id)
 
             # update object positions in memory
@@ -76,13 +77,13 @@ class EmbodiedAgent:
                 objects=self.world_items, lidar_data=scan)
             self.detected_objects = update_object_positions(new_object_detected, self.detected_objects)
 
-
         except Exception as e:
             logger.error(f"Error processing sensors: {e}")
             raise e
         return scan, img, x, y, phi
 
-    def _process_agent(self, response_format: completion_create_params.ResponseFormat | NotGiven = WayPointList) -> Dict:
+    def _process_agent(self,
+                       response_format: completion_create_params.ResponseFormat | NotGiven = WayPointList) -> Dict:
         logger.info(f"Processing agent at step {self.step}")
         message = f"""
 current position: {str(self.actuator.position)}
@@ -108,15 +109,15 @@ number of targets remaining: {self.target_remaining}
 
         pos = self.actuator.position
         for target in self.target_list:
-            # consider target as reached if it is detected and within 100mm distance
+            # consider target as reached if it is detected and within 300mm distance
             for target_id in self.identified_targets:
                 if target_id == target.item_id and calculate_distance(pos.x, pos.y, target.x,
-                                                                      target.y) < 100:
+                                                                      target.y) < 300:
                     self.target_remaining -= 1
                     self.reached_targets.append(target.item_id)
         return False
 
-    def move_to_target(self, target_x: int, target_y: int) -> None:
+    def move_to_target(self, target_x: int, target_y: int) -> bool:
         """
         Move the robot to target coordinates using grid movement.
         First calculates and turns to target direction, then moves straight.
@@ -144,7 +145,7 @@ number of targets remaining: {self.target_remaining}
         logger.info(f"{self.actuator.robot_name} {self.actuator.robot_id}: Moving {distance} mm")
 
         # Move straight to target
-        self.grid_straight(target_x, target_y)
+        return self.grid_straight(target_x, target_y)
 
     def move_grid(self, distance: int, direction: str) -> None:
         """
@@ -191,7 +192,7 @@ number of targets remaining: {self.target_remaining}
                         0 if direction in ('east', 'west') else  # E, W
                         distance_y)  # Diagonal
 
-        self.grid_straight(target_x, target_y)
+        return self.grid_straight(target_x, target_y)
 
     def grid_turn(
             self,
@@ -213,16 +214,15 @@ number of targets remaining: {self.target_remaining}
         diff = ((target_degree - phi) % 360)
         degree_to_turn = diff if diff <= 180 else diff - 360
         logger.info(f"Turning to target: {degree_to_turn} degrees remaining")
-        while abs(degree_to_turn) > 5:
+        while abs(degree_to_turn) > 10:
             if degree_to_turn > 0:
-                VWTurn(5, 100)
+                VWTurn(10, 200)
             else:
-                VWTurn(-5, 100)
+                VWTurn(-10, 200)
             VWWait()
             _, _, _, _, phi = self._process_sensors()
             diff = ((target_degree - phi) % 360)
             degree_to_turn = diff if diff <= 180 else diff - 360
-        VWWait()
 
     def grid_straight(self, target_x: int, target_y: int):
         """
@@ -236,13 +236,17 @@ number of targets remaining: {self.target_remaining}
         """
         distance = calculate_distance(self.actuator.position.x, self.actuator.position.y, target_x, target_y)
         pre_distance = distance
-        while distance <= pre_distance and is_movement_safe(self.actuator.scan):
+        flag = True
+        while distance <= pre_distance:
+            flag = is_movement_safe(self.actuator.scan)
+            if not flag:
+                break
             pre_distance = distance
-            VWStraight(10, 100)
+            VWStraight(20, 200)
             VWWait()
             scan, img, x, y, phi = self._process_sensors()
             distance = calculate_distance(x, y, target_x, target_y)
-        VWWait()
+        return flag
 
     def run_agent_with_action(self):
         """
@@ -294,5 +298,8 @@ number of targets remaining: {self.target_remaining}
             waypoint_list = response.get('response').get('waypoint_list', [])
             logger.info(f"Waypoint list: {waypoint_list}")
             for waypoint in waypoint_list:
-                self.move_to_target(waypoint.get('x'), waypoint.get('y'))
-                self.history_positions.append((self.actuator.position.x, self.actuator.position.y, self.actuator.position.phi))
+                flag = self.move_to_target(waypoint.get('x'), waypoint.get('y'))
+                if flag:
+                    self.history_positions.append(self.actuator.position)
+                else:
+                    break

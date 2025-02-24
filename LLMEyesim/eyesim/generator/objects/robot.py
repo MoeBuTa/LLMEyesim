@@ -1,6 +1,6 @@
-ROBOT_LOCATIONS=[
-            (300, 400),  # Bottom-left corner
-            (5700, 300),  # Bottom-right corner
-            (300, 5700),  # Top-left corner
-            (5700, 5700)  # Top-right corner
-        ]
+ROBOT_LOCATIONS = [
+    (200, 267),    # Bottom-left corner
+    (3800, 200),   # Bottom-right corner
+    (200, 3800),   # Top-left corner
+    (3800, 3800)   # Top-right corner
+]
